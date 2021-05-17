@@ -22,7 +22,7 @@ func relevantError(httpError error, apiError APIError) error {
 	}
 
 	if (APIError{}) == apiError {
-		return apiError
+		return nil
 	}
 
 	return nil
