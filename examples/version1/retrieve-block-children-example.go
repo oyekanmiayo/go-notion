@@ -22,7 +22,7 @@ func main() {
 
 	client := notion.NewClient(http.DefaultClient, *accessToken)
 
-	// List all users in workspace
+	// Retrieve the block children for a block
 	// Sample command: go run retrieve-page-example.go --access-token=<token> --block-id=<block-id>
 	params := &notion.RetrieveBlockChildrenParams{}
 	db, _, err := client.Blocks.RetrieveBlockChildren(*blockID, params)

@@ -7,7 +7,7 @@ type RichText struct {
 	Href        string       `json:"href,omitempty"`
 	Annotations *Annotations `json:"annotations,omitempty"`
 	Type        string       `json:"type"`
-	Text        Text         `json:"text,omitempty"`
+	Text        *Text         `json:"text,omitempty"`
 	Mention     interface{}  `json:"mention,omitempty"`
 	Equation    *Equation    `json:"equation,omitempty"`
 }

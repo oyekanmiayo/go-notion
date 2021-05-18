@@ -25,5 +25,5 @@ func relevantError(httpError error, apiError APIError) error {
 		return nil
 	}
 
-	return nil
+	return apiError
 }

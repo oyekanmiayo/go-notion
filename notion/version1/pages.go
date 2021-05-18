@@ -51,19 +51,19 @@ type WorkspaceParent struct {
 // This contains an extra field corresponding with the value of Type
 // https://developers.notion.com/reference/page#all-property-values
 // Use []RichText for Title, RichText
-// Use *Number for Number
-// Use *Select for Select
-// Use *MultiSelect for MultiSelect
-// Use *Date for Date
-// Use *Formula for Formula
-// Use []PageReference for Relation
-// Use *Rollup for Rollup
+// Use *NumberProperty for Number
+// Use *SelectProperty for Select
+// Use *[]MultiSelectPropertyOptions for MultiSelect
+// Use *DateProperty for Date
+// Use *FormulaProperty for Formula
+// Use []PageReferenceProperty for Relation
+// Use *RollupProperty for Rollup
 // Use []User for People
-// Use []FileReference for Files
+// Use []FileReferenceProperty for Files
 // Use *User for CreatedBy, LastEditedBy
 type PageProperty struct {
-	ID             string      `json:"id"`
-	Type           string      `json:"type"`
+	ID             string      `json:"id,omitempty"`
+	Type           string      `json:"type,omitempty"`
 	Title          interface{} `json:"title,omitempty"`
 	RichText       interface{} `json:"rich_text,omitempty"`
 	Number         interface{} `json:"number,omitempty"`
@@ -86,20 +86,16 @@ type PageProperty struct {
 	PhoneNumber    string      `json:"phone_number,omitempty"`
 }
 
-type Number struct {
+type NumberProperty struct {
 	Number int32 `json:"number,omitempty"`
 }
 
 // Color can only be "default", "gray", "brown", "red", "orange", "yellow", "green",
 // "blue", "purple" or "pink"
-type Select struct {
+type SelectProperty struct {
 	ID    string `json:"id,omitempty"`
 	Name  string `json:"name,omitempty"`
 	Color string `json:"color,omitempty"`
-}
-
-type MultiSelect struct {
-	MultiSelect []MultiSelectOptions `json:"multi_select,omitempty"`
 }
 
 // When updating a multi-select property, you can use either name or id.
@@ -108,7 +104,7 @@ type MultiSelect struct {
 // Color can only be "default", "gray", "brown", "red", "orange", "yellow", "green",
 // "blue", "purple" or "pink"
 // https://developers.notion.com/reference/page#multi-select-property-values
-type MultiSelectOptions struct {
+type MultiSelectPropertyOptions struct {
 	ID    string `json:"id,omitempty"`
 	Name  string `json:"name,omitempty"`
 	Color string `json:"color,omitempty"`
@@ -116,7 +112,7 @@ type MultiSelectOptions struct {
 
 // If End is not defined, this Date struct isn't considered a range
 // https://developers.notion.com/reference/page#date-property-values
-type Date struct {
+type DateProperty struct {
 	Start string `json:"star,omitempty"`
 	End   string `json:"end,omitempty"`
 }
@@ -124,7 +120,7 @@ type Date struct {
 // Type must be one of "string", "number", "boolean", and "date".
 // https://developers.notion.com/reference/page#formula-property-values
 // Use *Date for Date
-type Formula struct {
+type FormulaProperty struct {
 	Type    string      `json:"type"`
 	String  string      `json:"string,omitempty"`
 	Number  int32       `json:"number,omitempty"`
@@ -133,14 +129,14 @@ type Formula struct {
 }
 
 // https://developers.notion.com/reference/page#relation-property-values
-type PageReference struct {
+type PageReferenceProperty struct {
 	ID string `json:"id"`
 }
 
 // https://developers.notion.com/reference/page#rollup-property-values
-// Use *Date for Date
-// Use []RollupProperty for Array
-type Rollup struct {
+// Use *DateProperty for Date
+// Use []RollupPropertyDetails for Array
+type RollupProperty struct {
 	Type   string      `json:"type"`
 	Number int32       `json:"number,omitempty"`
 	Date   interface{} `json:"date,omitempty"`
@@ -149,17 +145,17 @@ type Rollup struct {
 
 // https://developers.notion.com/reference/page#rollup-property-value-element
 // Use []RichText for Title, RichText
-// Use *Number for Number
-// Use *Select for Select
-// Use *MultiSelect for MultiSelect
-// Use *Date for Date
-// Use *Formula for Formula
-// Use []PageReference for Relation
-// Use *Rollup for Rollup
+// Use *NumberProperty for Number
+// Use *SelectProperty for Select
+// Use *MultiSelectPropertyOptions for MultiSelect
+// Use *DateProperty for Date
+// Use *FormulaProperty for Formula
+// Use []PageReferenceProperty for Relation
+// Use *RollupProperty for Rollup
 // Use []User for People
-// Use []FileReference for Files
+// Use []FileReferenceProperty for Files
 // Use *User for CreatedBy, LastEditedBy
-type RollupProperty struct {
+type RollupPropertyDetails struct {
 	Type           string      `json:"type"`
 	Title          interface{} `json:"title,omitempty"`
 	RichText       interface{} `json:"rich_text,omitempty"`
@@ -184,7 +180,7 @@ type RollupProperty struct {
 }
 
 // https://developers.notion.com/reference/page#files-property-values
-type FileReference struct {
+type FileReferenceProperty struct {
 	Name string `json:"name,omitempty"`
 }
 

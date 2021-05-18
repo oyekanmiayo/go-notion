@@ -23,10 +23,10 @@ func main() {
 
 	// List all users in workspace
 	// Sample command: go run list-users-example.go --access-token=<token> --db-id=<database-id>
-	params := notion.ListUsersParams{
+	params := &notion.ListUsersQueryParams{
 		PageSize: 20,
 	}
-	db, _, err := client.Users.ListUsers(&params)
+	db, _, err := client.Users.ListUsers(params)
 	if err != nil {
 		fmt.Printf("Err %v\n", err)
 	}

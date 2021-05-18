@@ -22,7 +22,7 @@ func main() {
 
 	client := notion.NewClient(http.DefaultClient, *accessToken)
 
-	// List all users in workspace
+	// Retrieve a user by userID
 	// Sample command: go run retrieve-user-example.go --access-token=<token> --user-id=<user-id>
 	db, _, err := client.Users.RetrieveUser(*userID)
 	if err != nil {

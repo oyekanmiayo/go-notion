@@ -14,7 +14,6 @@ import (
 func main() {
 	flags := flag.NewFlagSet("notion-databases-example", flag.ExitOnError)
 	accessToken := flags.String("access-token", "", "Notion API Key / Notion Access Token")
-	pageID := flags.String("page-id", "", "Page ID")
 	err := flags.Parse(os.Args[1:])
 	if err != nil {
 		log.Fatalf("error: %v", err)
@@ -22,13 +21,16 @@ func main() {
 
 	client := notion.NewClient(http.DefaultClient, *accessToken)
 
-	// Retrieve a page using its pageID
-	// Sample command: go run retrieve-page-example.go --access-token=<token> --page-id=<page-id>
-	db, _, err := client.Pages.RetrievePage(*pageID)
+	// List all DBs in a workspace
+	// Sample command: go run list-databases-example.go --access-token=<token>
+	params := &notion.ListDatabasesQueryParams{
+		PageSize: 20,
+	}
+	resp, _, err := client.Databases.ListDatabases(params)
 	if err != nil {
 		fmt.Printf("Err %v\n", err)
 	}
 
-	jsonBody, _ := json.Marshal(db)
+	jsonBody, _ := json.Marshal(resp)
 	fmt.Println(string(jsonBody))
 }

@@ -45,7 +45,7 @@ func (u *UserService) RetrieveUser(userID string) (*User, *http.Response, error)
 	return user, resp, relevantError(err, *apiError)
 }
 
-type ListUsersParams struct {
+type ListUsersQueryParams struct {
 	StartCursor string `url:"start_cursor,omitempty"`
 	PageSize    int32  `url:"page_size,omitempty"`
 }
@@ -60,7 +60,7 @@ type ListUsersResponse struct {
 // https://developers.notion.com/reference/get-users
 // See https://developers.notion.com/reference/pagination to understand
 // how to iterate through paginated responses
-func (u *UserService) ListUsers(params *ListUsersParams) (*ListUsersResponse, *http.Response, error) {
+func (u *UserService) ListUsers(params *ListUsersQueryParams) (*ListUsersResponse, *http.Response, error) {
 	response := new(ListUsersResponse)
 	apiError := new(APIError)
 	resp, err := u.sling.New().Get("").QueryStruct(params).Receive(response, apiError)

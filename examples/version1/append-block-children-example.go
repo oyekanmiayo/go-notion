@@ -22,7 +22,7 @@ func main() {
 
 	client := notion.NewClient(http.DefaultClient, *accessToken)
 
-	// List all users in workspace
+	// Append block children to a block
 	// Sample command: go run append-block-children-example.go --access-token=<token> --block-id=<block-id>
 	params := &notion.AppendBlockChildrenBodyParams{
 		Children: []notion.Block{
@@ -33,7 +33,7 @@ func main() {
 					Text: []notion.RichText{
 						{
 							Type: "text",
-							Text: notion.Text{
+							Text: &notion.Text{
 								Content: "Header Two Test",
 							},
 						},
@@ -47,7 +47,7 @@ func main() {
 					Text: []notion.RichText{
 						{
 							Type: "text",
-							Text: notion.Text{
+							Text: &notion.Text{
 								Content: "Paragraph Test",
 							},
 						},

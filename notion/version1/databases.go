@@ -1,6 +1,7 @@
 package version1
 
 import (
+	"fmt"
 	"github.com/dghubble/sling"
 	"net/http"
 )
@@ -194,9 +195,9 @@ func (d *DatabaseService) QueryDatabase(databaseID string,
 	return response, resp, relevantError(err, *apiError)
 }
 
-type DatabaseListQueryParams struct {
-	StartCursor string `json:"start_cursor,omitempty"`
-	PageSize    int32  `json:"page_size,omitempty"`
+type ListDatabasesQueryParams struct {
+	StartCursor string `url:"start_cursor,omitempty"`
+	PageSize    int32  `url:"page_size,omitempty"`
 }
 
 type ListDatabasesResponse struct {
@@ -206,10 +207,14 @@ type ListDatabasesResponse struct {
 }
 
 // https://developers.notion.com/reference/get-databases
-func (d *DatabaseService) ListDatabases(params *DatabaseListQueryParams) (*ListDatabasesResponse, *http.Response, error) {
+func (d *DatabaseService) ListDatabases(params *ListDatabasesQueryParams) (*ListDatabasesResponse, *http.Response, error) {
 	response := new(ListDatabasesResponse)
 	apiError := new(APIError)
 	resp, err := d.sling.New().Get("").QueryStruct(params).Receive(response, apiError)
+
+	x, _ := d.sling.New().Get("").QueryStruct(params).Request()
+	fmt.Print(x.URL)
+	fmt.Println()
 
 	return response, resp, relevantError(err, *apiError)
 }

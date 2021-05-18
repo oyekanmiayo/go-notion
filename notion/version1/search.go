@@ -16,6 +16,7 @@ func newSearchService(sling *sling.Sling) *SearchService {
 	}
 }
 
+// From my tests it looks like the api checks if page titles contain the query
 type SearchBodyParams struct {
 	Query       string        `json:"query,omitempty"`
 	Sort        *Sort         `json:"sort,omitempty"`
@@ -31,8 +32,8 @@ type Sort struct {
 	Timestamp string `json:"timestamp,omitempty"`
 }
 
-// This is was CONFUSING, I'm not sure about this one (:
 // Value is either "page" or "database"
+// Property can only be "object"
 type SearchFilter struct {
 	Value    string `json:"value,omitempty"`
 	Property string `json:"property,omitempty"`
