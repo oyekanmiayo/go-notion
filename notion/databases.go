@@ -33,8 +33,7 @@ func (d *DatabaseService) RetrieveDatabase(databaseID string) (*Database, *http.
 	return database, resp, relevantError(err, *apiError)
 }
 
-// Use
-type DatabaseQueryBodyParams struct {
+type QueryDatabaseBodyParams struct {
 	Filter      interface{}   `json:"filter,omitempty"`
 	Sorts       []SortDetails `json:"sorts,omitempty"`
 	StartCursor string        `json:"start_cursor,omitempty"`
@@ -178,11 +177,15 @@ type FormulaCondition struct {
 }
 
 type QueryDatabaseResponse struct {
+	Object     string `json:"object,omitempty"`
+	Results    []Page `json:"results,omitempty"`
+	NextCursor string `json:"next_cursor,omitempty"`
+	HasMore    bool   `json:"has_more,omitempty"`
 }
 
 // https://developers.notion.com/reference/post-database-query
 func (d *DatabaseService) QueryDatabase(databaseID string,
-	params *DatabaseQueryBodyParams) (*QueryDatabaseResponse, *http.Response, error) {
+	params *QueryDatabaseBodyParams) (*QueryDatabaseResponse, *http.Response, error) {
 
 	response := new(QueryDatabaseResponse)
 	apiError := new(APIError)
