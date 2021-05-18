@@ -4,16 +4,17 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/oyekanmiayo/go-notion/notion"
 	"log"
 	"net/http"
 	"os"
+
+	notion "github.com/oyekanmiayo/go-notion/notion/version1"
 )
 
 func main() {
 	flags := flag.NewFlagSet("notion-databases-example", flag.ExitOnError)
 	accessToken := flags.String("access-token", "", "Notion API Key / Notion Access Token")
-	databaseID := flags.String("db-id", "", "Notion Database ID")
+	pageID := flags.String("page-id", "", "Page ID")
 	err := flags.Parse(os.Args[1:])
 	if err != nil {
 		log.Fatalf("error: %v", err)
@@ -21,9 +22,9 @@ func main() {
 
 	client := notion.NewClient(http.DefaultClient, *accessToken)
 
-	// Retrieve DB
-	// Sample command: go run retrieve-database-example.go --access-token=<token> --db-id=<database-id>
-	db, _, err := client.Databases.RetrieveDatabase(*databaseID)
+	// List all users in workspace
+	// Sample command: go run retrieve-page-example.go --access-token=<token> --page-id=<page-id>
+	db, _, err := client.Pages.RetrievePage(*pageID)
 	if err != nil {
 		fmt.Printf("Err %v\n", err)
 	}

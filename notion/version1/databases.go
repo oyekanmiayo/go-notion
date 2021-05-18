@@ -1,4 +1,4 @@
-package notion
+package version1
 
 import (
 	"github.com/dghubble/sling"

@@ -1,4 +1,4 @@
-package notion
+package version1
 
 // Type must be either "text", "mention" or "equation"
 // Use Mention for Mention

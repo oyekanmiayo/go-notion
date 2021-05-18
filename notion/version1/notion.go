@@ -1,11 +1,11 @@
-package notion
+package version1
 
 import (
 	"github.com/dghubble/sling"
 	"net/http"
 )
 
-const notionAPI = "https://api.notion.com/v1/"
+const notionAPI = "https://api.notion.com/version1/"
 const notionVersion = "2021-05-13"
 
 type Client struct {

@@ -4,10 +4,11 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/oyekanmiayo/go-notion/notion"
 	"log"
 	"net/http"
 	"os"
+
+	notion "github.com/oyekanmiayo/go-notion/notion/version1"
 )
 
 func main() {
