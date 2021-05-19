@@ -73,7 +73,7 @@ Read more about the Database endpoints [here](https://developers.notion.com/refe
 
 This retrieves a Notion database based on a specified ID.
 
-```
+```go
 client := notion.NewClient(http.DefaultClient, *accessToken)
 
 // Retrieve DB
