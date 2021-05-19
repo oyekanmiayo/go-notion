@@ -52,7 +52,7 @@ import (
 ) 
 
 func main() {
-	accessToken := os.GETENV("NOTION_BEARER_TOKEN")
+	accessToken := os.Getenv("NOTION_BEARER_TOKEN")
 	
 	// Notion Client
 	client := notion.NewClient(http.DefaultClient, accessToken)
