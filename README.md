@@ -44,7 +44,7 @@ Show image here
 
 NB: Internal Integration Token, Bearer Token and Access Token mean the same things here.
 
-```
+```go
 import (
 	notion "github.com/oyekanmiayo/go-notion/notion/version1"
 	"net/http"
@@ -90,7 +90,7 @@ See full code example [here]().
 This gets a list of [Pages]() contained in a database, filtered and ordered according to the filter conditions and sort
 criteria provided in the request. Filters can [single filters]() or [compound filters]() - read more [here]().
 
-```
+```go
 client := notion.NewClient(http.DefaultClient, *accessToken)
 
 // Query DB with SingleFilter
@@ -115,7 +115,7 @@ See full code example [here]() - it also contains a compound filter example :)
 More than one database can be shared with a Notion integration. This endpoint lists all the databases shared with an
 authenticated integration.
 
-```
+```go
 client := notion.NewClient(http.DefaultClient, *accessToken)
 
 // List all DBs in a workspace
@@ -138,7 +138,7 @@ Read more about Page endpoints [here](https://developers.notion.com/reference/pa
 
 This retrieves a Notion page based on a specified ID.
 
-```
+```go
 client := notion.NewClient(http.DefaultClient, *accessToken)
 
 // Retrieve a page using its pageID
@@ -155,7 +155,7 @@ See full code example [here]().
 Pages in Notion can be created within a database or within another page. This endpoint creates a page as a child of the
 parent (database or page) specified.
 
-```
+```go
 client := notion.NewClient(http.DefaultClient, *accessToken)
 
 // Create a page in a database
@@ -202,7 +202,7 @@ database. See full code example [here]() along with an example to create a page 
 Updates page property values for the specified page. Properties that are not set via the "properties" parameter will
 remain unchanged.
 
-```
+```go
 client := notion.NewClient(http.DefaultClient, *accessToken)
 
 // Update the title of a page
@@ -241,7 +241,7 @@ too! Read more about Block endpoints [here](https://developers.notion.com/refere
 Returns a paginated array of child block objects contained in the block using the ID specified. In order to receive a
 complete representation of a block, you may need to recursively retrieve the block children of child blocks.
 
-```
+```go
 client := notion.NewClient(http.DefaultClient, *accessToken)
 
 // Retrieve the block children for a block
@@ -259,7 +259,7 @@ See full code example [here]().
 Creates and appends new children blocks to the block using the ID specified. Returns the Block object which contains the
 new children.
 
-```
+```go
 client := notion.NewClient(http.DefaultClient, *accessToken)
 
 // Append block children (Header Two & Paragraph) to a block
@@ -313,7 +313,7 @@ more about User endpoints [here](https://developers.notion.com/reference/user).
 
 This retrieves a Notion user based on a specified ID.
 
-```
+```go
 client := notion.NewClient(http.DefaultClient, *accessToken)
 
 // Retrieve a user by userID
@@ -329,7 +329,7 @@ See full code example [here]().
 
 Returns a paginated list of users for the workspace.
 
-```
+```go
 client := notion.NewClient(http.DefaultClient, *accessToken)
 
 // List all users in workspace
@@ -350,7 +350,7 @@ Searches all pages and child pages that are shared with the integration and retu
 have titles that contain the `query` parameter. Other parameters like `sort` and `filter` also affect the output. Read
 more about it [here](https://developers.notion.com/reference/post-search)
 
-```
+```go
 client := notion.NewClient(http.DefaultClient, *accessToken)
 
 // Search the workspace and return pages that have titles containing "Yurts"
