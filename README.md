@@ -376,7 +376,9 @@ See full code example [here]().
 
 ### Contributing
 
-Contributions won't be accepted until Notion's v1 API is out of beta. This may change in the future, if needed.
+* Code Contributions won't be accepted until Notion's v1 API is out of beta. This may change in the future, if needed
+* Open an issue if you find a bug or missing integration
+* You can reach out to me via [Twitter]() or [Email]() for urgent issues
 
 ### License
 

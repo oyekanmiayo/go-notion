@@ -29,6 +29,13 @@ func main() {
 		fmt.Printf("Err %v\n", err)
 	}
 
+	// Print column names and type for DB table
+	for k, v := range db.Properties {
+		fmt.Printf("%v, %v", k, v.Type)
+		fmt.Println()
+	}
+
+	// View response in json
 	jsonBody, _ := json.Marshal(db)
 	fmt.Println(string(jsonBody))
 }

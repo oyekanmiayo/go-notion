@@ -18,14 +18,91 @@ func newDatabaseService(sling *sling.Sling) *DatabaseService {
 }
 
 type Database struct {
-	Object         string      `json:"object,omitempty"`
-	ID             string      `json:"id,omitempty"`
-	CreatedTime    string      `json:"created_time,omitempty"`
-	LastEditedTime string      `json:"last_edited_time,omitempty"`
-	Title          []RichText  `json:"title,omitempty"`
-	Properties     interface{} `json:"properties,omitempty"`
+	Object         string                 `json:"object,omitempty"`
+	ID             string                 `json:"id,omitempty"`
+	CreatedTime    string                 `json:"created_time,omitempty"`
+	LastEditedTime string                 `json:"last_edited_time,omitempty"`
+	Title          []RichText             `json:"title,omitempty"`
+	Properties     map[string]PropertyObj `json:"properties,omitempty"`
 }
 
+// Type can only be one of "title", "rich_text", "number", "select", "multi_select", "date", "people", "file",
+// "checkbox", "url", "email", "phone_number", "formula", "relation", "rollup", "created_time", "created_by",
+// "last_edited_time", "last_edited_by".
+// Title doesn't have any addition configuration
+type PropertyObj struct {
+	ID             string            `json:"id,omitempty"`
+	Type           string            `json:"type,omitempty"`
+	Title          interface{}       `json:"title,omitempty"`
+	Text           interface{}       `json:"text,omitempty"`
+	RichText       interface{}       `json:"rich_text,omitempty"`
+	Number         NumberConfig      `json:"number,omitempty"`
+	Select         SelectConfig      `json:"select,omitempty"`
+	MultiSelect    MultiSelectConfig `json:"multi_select,omitempty"`
+	Date           interface{}       `json:"date,omitempty"`
+	People         interface{}       `json:"people,omitempty"`
+	File           interface{}       `json:"file,omitempty"`
+	Checkbox       interface{}       `json:"checkbox,omitempty"`
+	URL            interface{}       `json:"url,omitempty"`
+	Email          interface{}       `json:"email,omitempty"`
+	PhoneNumber    interface{}       `json:"phone_number,omitempty"`
+	Formula        FormulaConfig     `json:"formula,omitempty"`
+	Relation       RelationConfig    `json:"relation,omitempty"`
+	Rollup         RollupConfig      `json:"rollup,omitempty"`
+	CreatedTime    interface{}       `json:"created_time,omitempty"`
+	CreatedBy      interface{}       `json:"created_by,omitempty"`
+	LastEditedTime interface{}       `json:"last_edited_time,omitempty"`
+	LastEditedBy   interface{}       `json:"last_edited_by,omitempty"`
+}
+
+// Format can only be one of number, number_with_commas, percent, dollar, euro, pound, yen, ruble, rupee, won, yuan.
+type NumberConfig struct {
+	Format string `json:"format,omitempty"`
+}
+
+type SelectConfig struct {
+	Options []SelectOption `json:"options,omitempty"`
+}
+
+// Color can only be one of default, gray, brown, orange, yellow, green, blue, purple, pink, red.
+type SelectOption struct {
+	Name  string `json:"name,omitempty"`
+	ID    string `json:"id,omitempty"`
+	Color string `json:"color,omitempty"`
+}
+
+type MultiSelectConfig struct {
+	Options []MultiSelectOption `json:"options,omitempty"`
+}
+
+// Color can only be one of default, gray, brown, orange, yellow, green, blue, purple, pink, red.
+type MultiSelectOption struct {
+	Name  string `json:"name,omitempty"`
+	ID    string `json:"id,omitempty"`
+	Color string `json:"color,omitempty"`
+}
+
+type FormulaConfig struct {
+	Expression string `json:"expression,omitempty"`
+}
+
+type RelationConfig struct {
+	DatabaseID         string `json:"database_id,omitempty"`
+	SyncedPropertyName string `json:"synced_property_name,omitempty"`
+	SyncedPropertyID   string `json:"synced_property_id,omitempty"`
+}
+
+// Function can be one of count_all, count_values, count_unique_values, count_empty, count_not_empty, percent_empty,
+// percent_not_empty, sum, average, median, min, max, range
+type RollupConfig struct {
+	RelationPropertyName string `json:"relation_property_name,omitempty"`
+	RelationPropertyID   string `json:"relation_property_id,omitempty"`
+	RollupPropertyName   string `json:"rollup_property_name,omitempty"`
+	RollupPropertyID     string `json:"rollup_property_id,omitempty"`
+	Function             string `json:"function,omitempty"`
+}
+
+// https://developers.notion.com/reference/get-database
 func (d *DatabaseService) RetrieveDatabase(databaseID string) (*Database, *http.Response, error) {
 	database := new(Database)
 	apiError := new(APIError)
