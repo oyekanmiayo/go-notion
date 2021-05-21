@@ -234,10 +234,10 @@ type RelationCondition struct {
 // Use NumberCondition for Number
 // Use DateCondition for Date
 type FormulaCondition struct {
-	Text     interface{} `json:"text,omitempty"`
-	Checkbox interface{} `json:"checkbox,omitempty"`
-	Number   interface{} `json:"number,omitempty"`
-	Date     interface{} `json:"date,omitempty"`
+	Text     *TextCondition     `json:"text,omitempty"`
+	Checkbox *CheckboxCondition `json:"checkbox,omitempty"`
+	Number   *NumberCondition   `json:"number,omitempty"`
+	Date     *DateCondition     `json:"date,omitempty"`
 }
 
 type QueryDatabaseResponse struct {
