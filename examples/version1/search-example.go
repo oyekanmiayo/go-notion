@@ -20,7 +20,7 @@ func main() {
 
 	client := notion.NewClient(http.DefaultClient, *accessToken)
 
-	// Search the workspace
+	// Search the workspace for pages with titles that contain this
 	// Sample command: go run search-example.go --access-token=<token>
 	params := &notion.SearchBodyParams{
 		Query: "Yurts",
@@ -28,16 +28,28 @@ func main() {
 			Direction: "descending",
 			Timestamp: "last_edited_time",
 		},
-		Filter: &notion.SearchFilter{
-			Value:    "page",
-			Property: "object",
-		},
 	}
-	db, _, err := client.Search.Search(params)
+	resp, _, err := client.Search.SearchPage(params)
 	if err != nil {
 		fmt.Printf("Err %v\n", err)
 	}
 
-	jsonBody, _ := json.Marshal(db)
+	jsonBody, _ := json.Marshal(resp)
 	fmt.Println(string(jsonBody))
+
+	// Search the workspace for databases with titles that contain this
+	paramsII := &notion.SearchBodyParams{
+		Query: "Yurts",
+		Sort: &notion.Sort{
+			Direction: "descending",
+			Timestamp: "last_edited_time",
+		},
+	}
+	res, _, err := client.Search.SearchDatabase(paramsII)
+	if err != nil {
+		fmt.Printf("Err %v\n", err)
+	}
+
+	jsonBodyII, _ := json.Marshal(res)
+	fmt.Println(string(jsonBodyII))
 }

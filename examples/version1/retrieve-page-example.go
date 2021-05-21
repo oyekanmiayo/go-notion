@@ -4,11 +4,10 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	notion "github.com/oyekanmiayo/go-notion/notion/version1"
 	"log"
 	"net/http"
 	"os"
-
-	notion "github.com/oyekanmiayo/go-notion/notion/version1"
 )
 
 func main() {
@@ -24,11 +23,12 @@ func main() {
 
 	// Retrieve a page using its pageID
 	// Sample command: go run retrieve-page-example.go --access-token=<token> --page-id=<page-id>
-	db, _, err := client.Pages.RetrievePage(*pageID)
+	page, _, err := client.Pages.RetrievePage(*pageID)
 	if err != nil {
 		fmt.Printf("Err %v\n", err)
 	}
 
-	jsonBody, _ := json.Marshal(db)
+	// Print page response as json
+	jsonBody, _ := json.Marshal(page)
 	fmt.Println(string(jsonBody))
 }

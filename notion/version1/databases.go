@@ -1,7 +1,6 @@
 package version1
 
 import (
-	"fmt"
 	"github.com/dghubble/sling"
 	"net/http"
 )
@@ -270,10 +269,6 @@ func (d *DatabaseService) ListDatabases(params *ListDatabasesQueryParams) (*List
 	response := new(ListDatabasesResponse)
 	apiError := new(APIError)
 	resp, err := d.sling.New().Get("").QueryStruct(params).Receive(response, apiError)
-
-	x, _ := d.sling.New().Get("").QueryStruct(params).Request()
-	fmt.Print(x.URL)
-	fmt.Println()
 
 	return response, resp, relevantError(err, *apiError)
 }

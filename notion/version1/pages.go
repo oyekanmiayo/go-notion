@@ -18,72 +18,65 @@ func newPageService(sling *sling.Sling) *PageService {
 
 // https://developers.notion.com/reference/page#all-pages
 // Object must always be "page"
-// Page can either be *DatabaseParent, *PageParent or *WorkspaceParent
-// Properties will contain a key and value. The key is dependent on what the User sets in Notion,
-// so we cannoting predetermine the json tag :)
+// For Properties,
+// - If parent.type is "page_id" or "workspace", then the only valid key is title.
+// - If parent.type is "database_id", then the keys and values of this field are determined by the properties
+//   of the database this page belongs to.
+// Page can be *DatabaseParent, *PageParent or *WorkspaceParent
 type Page struct {
-	Object         string      `json:"object,omitempty"`
-	ID             string      `json:"id,omitempty"`
-	CreatedTime    string      `json:"created_time,omitempty"`
-	LastEditedTime string      `json:"last_edited_time,omitempty"`
-	Parent         interface{} `json:"parent,omitempty"`
-	Archived       bool        `json:"archived,omitempty"`
-	Properties     interface{} `json:"properties,omitempty"`
+	Object         string                  `json:"object,omitempty"`
+	ID             string                  `json:"id,omitempty"`
+	CreatedTime    string                  `json:"created_time,omitempty"`
+	LastEditedTime string                  `json:"last_edited_time,omitempty"`
+	Parent         interface{}             `json:"parent,omitempty"`
+	Archived       bool                    `json:"archived,omitempty"`
+	Properties     map[string]PageProperty `json:"properties,omitempty"`
 }
 
-// Type is always "database_id"
+// Type is always "database_id" for Database Parent
 type DatabaseParent struct {
-	Type       string `json:"type"`
+	Type       string `json:"type,omitempty"`
 	DatabaseID string `json:"database_id,omitempty"`
 }
 
 // Type is always "page_id
 type PageParent struct {
-	Type   string `json:"type"`
+	Type   string `json:"type,omitempty"`
 	PageID string `json:"page_id,omitempty"`
 }
 
 // Type is always "workspace"
 type WorkspaceParent struct {
-	Type string `json:"type"`
+	Type string `json:"type,omitempty"`
 }
 
-// This contains an extra field corresponding with the value of Type
+// Type can be only one of "rich_text", "number", "select", "multi_select", "date", "formula",
+// "relation", "rollup", "title", "people", "files", "checkbox", "url", "email", "phone_number",
+// "created_time", "created_by", "last_edited_time", and "last_edited_by".
 // https://developers.notion.com/reference/page#all-property-values
-// Use []RichText for Title, RichText
-// Use *NumberProperty for Number
-// Use *SelectProperty for Select
-// Use *[]MultiSelectPropertyOptions for MultiSelect
-// Use *DateProperty for Date
-// Use *FormulaProperty for Formula
-// Use []PageReferenceProperty for Relation
-// Use *RollupProperty for Rollup
-// Use []User for People
-// Use []FileReferenceProperty for Files
-// Use *User for CreatedBy, LastEditedBy
 type PageProperty struct {
-	ID             string      `json:"id,omitempty"`
-	Type           string      `json:"type,omitempty"`
-	Title          interface{} `json:"title,omitempty"`
-	RichText       interface{} `json:"rich_text,omitempty"`
-	Number         interface{} `json:"number,omitempty"`
-	Select         interface{} `json:"select,omitempty"`
-	URL            string      `json:"url,omitempty"`
-	Email          string      `json:"email,omitempty"`
-	Phone          interface{} `json:"phone,omitempty"`
-	Checkbox       bool        `json:"checkbox,omitempty"`
-	MultiSelect    interface{} `json:"multi_select,omitempty"`
-	CreatedTime    string      `json:"created_time,omitempty"`
-	LastEditedTime string      `json:"last_edited_time,omitempty"`
-	Date           interface{} `json:"date,omitempty"`
-	CreatedBy      interface{} `json:"created_by,omitempty"`
-	LastEditedBy   interface{} `json:"last_edited_by,omitempty"`
-	Files          interface{} `json:"files,omitempty"`
-	Relation       interface{} `json:"relation,omitempty"`
-	Formula        interface{} `json:"formula,omitempty"`
-	Rollup         interface{} `json:"rollup,omitempty"`
-	People         interface{} `json:"people,omitempty"`
-	PhoneNumber    string      `json:"phone_number,omitempty"`
+	ID             string                    `json:"id,omitempty"`
+	Type           string                    `json:"type,omitempty"`
+	Title          []RichText                `json:"title,omitempty"`
+	RichText       []RichText                `json:"rich_text,omitempty"`
+	Number         int64                     `json:"number,omitempty"`
+	Select         *SelectProperty           `json:"select,omitempty"`
+	URL            string                    `json:"url,omitempty"`
+	Email          string                    `json:"email,omitempty"`
+	Phone          interface{}               `json:"phone,omitempty"`
+	Checkbox       bool                      `json:"checkbox,omitempty"`
+	MultiSelect    []MultiSelectPropertyOpts `json:"multi_select,omitempty"`
+	CreatedTime    string                    `json:"created_time,omitempty"`
+	LastEditedTime string                    `json:"last_edited_time,omitempty"`
+	Date           *DateProperty             `json:"date,omitempty"`
+	CreatedBy      *User                     `json:"created_by,omitempty"`
+	LastEditedBy   *User                     `json:"last_edited_by,omitempty"`
+	Files          []FileReferenceProperty   `json:"files,omitempty"`
+	Relation       []PageReferenceProperty   `json:"relation,omitempty"`
+	Formula        *FormulaProperty          `json:"formula,omitempty"`
+	Rollup         *RollupProperty           `json:"rollup,omitempty"`
+	People         []User                    `json:"people,omitempty"`
+	PhoneNumber    string                    `json:"phone_number,omitempty"`
 }
 
 type NumberProperty struct {
@@ -104,7 +97,7 @@ type SelectProperty struct {
 // Color can only be "default", "gray", "brown", "red", "orange", "yellow", "green",
 // "blue", "purple" or "pink"
 // https://developers.notion.com/reference/page#multi-select-property-values
-type MultiSelectPropertyOptions struct {
+type MultiSelectPropertyOpts struct {
 	ID    string `json:"id,omitempty"`
 	Name  string `json:"name,omitempty"`
 	Color string `json:"color,omitempty"`
@@ -121,62 +114,54 @@ type DateProperty struct {
 // https://developers.notion.com/reference/page#formula-property-values
 // Use *Date for Date
 type FormulaProperty struct {
-	Type    string      `json:"type"`
-	String  string      `json:"string,omitempty"`
-	Number  int32       `json:"number,omitempty"`
-	Boolean bool        `json:"boolean,omitempty"`
-	Date    interface{} `json:"date,omitempty"`
+	Type    string        `json:"type"`
+	String  string        `json:"string,omitempty"`
+	Number  int32         `json:"number,omitempty"`
+	Boolean bool          `json:"boolean,omitempty"`
+	Date    *DateProperty `json:"date,omitempty"`
 }
 
 // https://developers.notion.com/reference/page#relation-property-values
 type PageReferenceProperty struct {
-	ID string `json:"id"`
+	ID string `json:"id,omitempty"`
 }
 
 // https://developers.notion.com/reference/page#rollup-property-values
 // Use *DateProperty for Date
-// Use []RollupPropertyDetails for Array
+// Use  for Array
 type RollupProperty struct {
-	Type   string      `json:"type"`
-	Number int32       `json:"number,omitempty"`
-	Date   interface{} `json:"date,omitempty"`
-	Array  interface{} `json:"array,omitempty"`
+	Type   string                  `json:"type,omitempty"`
+	Number int32                   `json:"number,omitempty"`
+	Date   *DateProperty           `json:"date,omitempty"`
+	Array  []RollupPropertyElement `json:"array,omitempty"`
 }
 
 // https://developers.notion.com/reference/page#rollup-property-value-element
-// Use []RichText for Title, RichText
-// Use *NumberProperty for Number
-// Use *SelectProperty for Select
-// Use *MultiSelectPropertyOptions for MultiSelect
-// Use *DateProperty for Date
-// Use *FormulaProperty for Formula
-// Use []PageReferenceProperty for Relation
-// Use *RollupProperty for Rollup
-// Use []User for People
-// Use []FileReferenceProperty for Files
-// Use *User for CreatedBy, LastEditedBy
-type RollupPropertyDetails struct {
-	Type           string      `json:"type"`
-	Title          interface{} `json:"title,omitempty"`
-	RichText       interface{} `json:"rich_text,omitempty"`
-	Number         interface{} `json:"number,omitempty"`
-	Select         interface{} `json:"select,omitempty"`
-	URL            interface{} `json:"url,omitempty"`
-	Email          interface{} `json:"email,omitempty"`
-	Phone          interface{} `json:"phone,omitempty"`
-	Checkbox       interface{} `json:"checkbox,omitempty"`
-	MultiSelect    interface{} `json:"multi_select,omitempty"`
-	CreatedTime    interface{} `json:"created_time,omitempty"`
-	LastEditedTime interface{} `json:"last_edited_time,omitempty"`
-	Date           interface{} `json:"date,omitempty"`
-	CreatedBy      interface{} `json:"created_by,omitempty"`
-	LastEditedBy   interface{} `json:"last_edited_by,omitempty"`
-	Files          interface{} `json:"files,omitempty"`
-	Relation       interface{} `json:"relation,omitempty"`
-	Formula        interface{} `json:"formula,omitempty"`
-	Rollup         interface{} `json:"rollup,omitempty"`
-	People         interface{} `json:"people,omitempty"`
-	PhoneNumber    interface{} `json:"phone_number,omitempty"`
+// Type is one of rich_text", "number", "select", "multi_select", "date", "formula", "relation",
+// "rollup", "title", "people", "files", "checkbox", "url", "email", "phone_number", "created_time",
+// "created_by", "last_edited_time", or "last_edited_by"
+type RollupPropertyElement struct {
+	Type           string                    `json:"type"`
+	Title          []RichText                `json:"title,omitempty"`
+	RichText       []RichText                `json:"rich_text,omitempty"`
+	Number         int64                     `json:"number,omitempty"`
+	Select         *SelectProperty           `json:"select,omitempty"`
+	URL            string                    `json:"url,omitempty"`
+	Email          string                    `json:"email,omitempty"`
+	Phone          interface{}               `json:"phone,omitempty"`
+	Checkbox       bool                      `json:"checkbox,omitempty"`
+	MultiSelect    []MultiSelectPropertyOpts `json:"multi_select,omitempty"`
+	CreatedTime    string                    `json:"created_time,omitempty"`
+	LastEditedTime string                    `json:"last_edited_time,omitempty"`
+	Date           *DateProperty             `json:"date,omitempty"`
+	CreatedBy      *User                     `json:"created_by,omitempty"`
+	LastEditedBy   *User                     `json:"last_edited_by,omitempty"`
+	Files          []FileReferenceProperty   `json:"files,omitempty"`
+	Relation       interface{}               `json:"relation,omitempty"`
+	Formula        *FormulaProperty          `json:"formula,omitempty"`
+	Rollup         interface{}               `json:"rollup,omitempty"`
+	People         []User                    `json:"people,omitempty"`
+	PhoneNumber    string                    `json:"phone_number,omitempty"`
 }
 
 // https://developers.notion.com/reference/page#files-property-values
@@ -211,7 +196,7 @@ func (p *PageService) CreatePage(params *CreatePageBodyParams) (*Page, *http.Res
 }
 
 type UpdatePagePropertiesBodyParams struct {
-	Properties interface{} `json:"properties,omitempty"`
+	Properties map[string]PageProperty `json:"properties,omitempty"`
 }
 
 // https://developers.notion.com/reference/patch-page

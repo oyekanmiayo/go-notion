@@ -26,19 +26,19 @@ func main() {
 		// first keys are the names or ids of the properties :)
 		// id for title is "title"
 		// See examples here: https://developers.notion.com/reference/page#page-property-value
-		Properties: map[string]map[string]interface{}{
+		Properties: map[string]notion.PageProperty{
 			"Name": {
-				"title": []notion.RichText{
+				Title: []notion.RichText{
 					{
 						Type: "text",
 						Text: &notion.Text{
-							Content: "Jamaican Cuisines II",
+							Content: "Jamaican Cuisines III",
 						},
 					},
 				},
 			},
 			"Recommended": {
-				"checkbox": false,
+				Checkbox: true,
 			},
 		},
 	}

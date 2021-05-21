@@ -28,8 +28,8 @@ func main() {
 		Parent: &notion.DatabaseParent{
 			DatabaseID: *databaseID,
 		},
-		Properties: map[string]interface{}{
-			"Name": &notion.PageProperty{
+		Properties: map[string]notion.PageProperty{
+			"Name": {
 				Title: []notion.RichText{
 					{
 						Text: &notion.Text{
@@ -38,8 +38,8 @@ func main() {
 					},
 				},
 			},
-			"Tags": &notion.PageProperty{
-				MultiSelect: []notion.MultiSelectPropertyOptions{
+			"Tags": {
+				MultiSelect: []notion.MultiSelectPropertyOpts{
 					{
 						Name: "Tag1",
 					},
@@ -48,7 +48,7 @@ func main() {
 					},
 				},
 			},
-			"Recommended": &notion.PageProperty{
+			"Recommended": {
 				Checkbox: true,
 			},
 		},

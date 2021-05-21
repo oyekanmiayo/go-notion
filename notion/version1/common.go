@@ -8,7 +8,7 @@ type RichText struct {
 	Annotations *Annotations `json:"annotations,omitempty"`
 	Type        string       `json:"type"`
 	Text        *Text        `json:"text,omitempty"`
-	Mention     interface{}  `json:"mention,omitempty"`
+	Mention     *Mention     `json:"mention,omitempty"`
 	Equation    *Equation    `json:"equation,omitempty"`
 }
 
@@ -40,11 +40,11 @@ type Link struct {
 // Use DatabaseMention for DatabaseMention
 // Use Date for Date
 type Mention struct {
-	Type            string      `json:"type"`
-	UserMention     *User       `json:"user,omitempty"`
-	PageMention     interface{} `json:"page,omitempty"`
-	DatabaseMention interface{} `json:"database,omitempty"`
-	Date            interface{} `json:"date,omitempty"`
+	Type            string           `json:"type"`
+	UserMention     *User            `json:"user,omitempty"`
+	PageMention     *PageMention     `json:"page,omitempty"`
+	DatabaseMention *DatabaseMention `json:"database,omitempty"`
+	Date            *DateProperty    `json:"date,omitempty"`
 }
 
 type PageMention struct {

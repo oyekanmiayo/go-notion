@@ -39,18 +39,45 @@ type SearchFilter struct {
 	Property string `json:"property,omitempty"`
 }
 
-// From what I understand atm, Results can contains an array with Page and Database objects
-type SearchResponse struct {
-	Object     string      `json:"object,omitempty"`
-	Results    interface{} `json:"results,omitempty"`
-	NextCursor string      `json:"next_cursor,omitempty"`
-	HasMore    bool        `json:"has_more,omitempty"`
+// TODO: Find a way to unify responses and make them accessible.
+// Use json.RawMessage & https://play.golang.org/p/e6kvxtOeTCc
+
+type SearchPageResponse struct {
+	Object     string `json:"object,omitempty"`
+	Results    []Page `json:"results,omitempty"`
+	NextCursor string `json:"next_cursor,omitempty"`
+	HasMore    bool   `json:"has_more,omitempty"`
 }
 
-// https://developers.notion.com/reference/post-search
-func (s *SearchService) Search(params *SearchBodyParams) (*SearchResponse, *http.Response, error) {
-	sResponse := new(SearchResponse)
+func (s *SearchService) SearchPage(params *SearchBodyParams) (*SearchPageResponse, *http.Response, error) {
+	sResponse := new(SearchPageResponse)
 	apiError := new(APIError)
+
+	params.Filter = &SearchFilter{
+		Property: "object",
+		Value:    "page",
+	}
+
+	httpResponse, httpError := s.sling.New().Post("").BodyJSON(params).Receive(sResponse, apiError)
+
+	return sResponse, httpResponse, relevantError(httpError, *apiError)
+}
+
+type SearchDatabaseResponse struct {
+	Object     string     `json:"object,omitempty"`
+	Results    []Database `json:"results,omitempty"`
+	NextCursor string     `json:"next_cursor,omitempty"`
+	HasMore    bool       `json:"has_more,omitempty"`
+}
+
+func (s *SearchService) SearchDatabase(params *SearchBodyParams) (*SearchDatabaseResponse, *http.Response, error) {
+	sResponse := new(SearchDatabaseResponse)
+	apiError := new(APIError)
+
+	params.Filter = &SearchFilter{
+		Property: "object",
+		Value:    "database",
+	}
 	httpResponse, httpError := s.sling.New().Post("").BodyJSON(params).Receive(sResponse, apiError)
 
 	return sResponse, httpResponse, relevantError(httpError, *apiError)

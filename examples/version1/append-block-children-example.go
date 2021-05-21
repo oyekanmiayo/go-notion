@@ -29,7 +29,7 @@ func main() {
 			{
 				Object: "block",
 				Type:   "heading_2",
-				HeadingTwo: &notion.HeadingTwo{
+				HeadingTwo: &notion.HeadingTwoBlock{
 					Text: []notion.RichText{
 						{
 							Type: "text",
@@ -43,7 +43,7 @@ func main() {
 			{
 				Object: "block",
 				Type:   "paragraph",
-				Paragraph: &notion.Paragraph{
+				Paragraph: &notion.ParagraphBlock{
 					Text: []notion.RichText{
 						{
 							Type: "text",
