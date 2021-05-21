@@ -229,10 +229,6 @@ type RelationCondition struct {
 	IsNotEmpty      string `json:"is_not_empty,omitempty"`
 }
 
-// Use TextCondition for Text
-// Use CheckboxCondition for Checkbox
-// Use NumberCondition for Number
-// Use DateCondition for Date
 type FormulaCondition struct {
 	Text     *TextCondition     `json:"text,omitempty"`
 	Checkbox *CheckboxCondition `json:"checkbox,omitempty"`
