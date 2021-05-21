@@ -29,30 +29,29 @@ type Database struct {
 // Type can only be one of "title", "rich_text", "number", "select", "multi_select", "date", "people", "file",
 // "checkbox", "url", "email", "phone_number", "formula", "relation", "rollup", "created_time", "created_by",
 // "last_edited_time", "last_edited_by".
-// Title doesn't have any addition configuration
 type PropertyObj struct {
-	ID             string            `json:"id,omitempty"`
-	Type           string            `json:"type,omitempty"`
-	Title          interface{}       `json:"title,omitempty"`
-	Text           interface{}       `json:"text,omitempty"`
-	RichText       interface{}       `json:"rich_text,omitempty"`
-	Number         NumberConfig      `json:"number,omitempty"`
-	Select         SelectConfig      `json:"select,omitempty"`
-	MultiSelect    MultiSelectConfig `json:"multi_select,omitempty"`
-	Date           interface{}       `json:"date,omitempty"`
-	People         interface{}       `json:"people,omitempty"`
-	File           interface{}       `json:"file,omitempty"`
-	Checkbox       interface{}       `json:"checkbox,omitempty"`
-	URL            interface{}       `json:"url,omitempty"`
-	Email          interface{}       `json:"email,omitempty"`
-	PhoneNumber    interface{}       `json:"phone_number,omitempty"`
-	Formula        FormulaConfig     `json:"formula,omitempty"`
-	Relation       RelationConfig    `json:"relation,omitempty"`
-	Rollup         RollupConfig      `json:"rollup,omitempty"`
-	CreatedTime    interface{}       `json:"created_time,omitempty"`
-	CreatedBy      interface{}       `json:"created_by,omitempty"`
-	LastEditedTime interface{}       `json:"last_edited_time,omitempty"`
-	LastEditedBy   interface{}       `json:"last_edited_by,omitempty"`
+	ID             string             `json:"id,omitempty"`
+	Type           string             `json:"type,omitempty"`
+	Title          interface{}        `json:"title,omitempty"`
+	Text           interface{}        `json:"text,omitempty"`
+	RichText       interface{}        `json:"rich_text,omitempty"`
+	Number         *NumberConfig      `json:"number,omitempty"`
+	Select         *SelectConfig      `json:"select,omitempty"`
+	MultiSelect    *MultiSelectConfig `json:"multi_select,omitempty"`
+	Date           interface{}        `json:"date,omitempty"`
+	People         interface{}        `json:"people,omitempty"`
+	File           interface{}        `json:"file,omitempty"`
+	Checkbox       interface{}        `json:"checkbox,omitempty"`
+	URL            interface{}        `json:"url,omitempty"`
+	Email          interface{}        `json:"email,omitempty"`
+	PhoneNumber    interface{}        `json:"phone_number,omitempty"`
+	Formula        *FormulaConfig     `json:"formula,omitempty"`
+	Relation       *RelationConfig    `json:"relation,omitempty"`
+	Rollup         *RollupConfig      `json:"rollup,omitempty"`
+	CreatedTime    interface{}        `json:"created_time,omitempty"`
+	CreatedBy      interface{}        `json:"created_by,omitempty"`
+	LastEditedTime interface{}        `json:"last_edited_time,omitempty"`
+	LastEditedBy   interface{}        `json:"last_edited_by,omitempty"`
 }
 
 // Format can only be one of number, number_with_commas, percent, dollar, euro, pound, yen, ruble, rupee, won, yuan.
@@ -111,60 +110,47 @@ func (d *DatabaseService) RetrieveDatabase(databaseID string) (*Database, *http.
 	return database, resp, relevantError(err, *apiError)
 }
 
+// Filter can be either SingleFilter or CompoundFilter
 type QueryDatabaseBodyParams struct {
-	Filter      interface{}   `json:"filter,omitempty"`
-	Sorts       []SortDetails `json:"sorts,omitempty"`
-	StartCursor string        `json:"start_cursor,omitempty"`
-	PageSize    int32         `json:"page_size,omitempty"`
+	Filter      interface{}    `json:"filter,omitempty"`
+	Sorts       []SortCriteria `json:"sorts,omitempty"`
+	StartCursor string         `json:"start_cursor,omitempty"`
+	PageSize    int32          `json:"page_size,omitempty"`
 }
 
 // Timestamp must either be "created_time" or "last_edited_time"
 // Direction must either be "ascending" or "descending"
-type SortDetails struct {
+type SortCriteria struct {
 	Property  string `json:"property,omitempty"`
 	Timestamp string `json:"timestamp,omitempty"`
 	Direction string `json:"direction,omitempty"`
 }
 
-// Use []SingleFilter or []CompoundFilter for OR
-// Use []SingleFilter or []CompoundFilter for AND
+// OR and AND can either be []SingleFilter or []CompoundFilter (this is only valid once).
 type CompoundFilter struct {
 	OR  interface{} `json:"or,omitempty"`
 	AND interface{} `json:"and,omitempty"`
 }
 
-// We use interfaces because many of the condition structs contain the same **json tags**.
-// Setting them explicity here will throw an error. It is extremely important
-// to fulfil each interface appropriately, so please look carefully at the guide below:
-// Use *TextCondition for Title, RichText, URL, Email, Phone
-// Use *NumberCondition for Number
-// Use *CheckboxCondition for Checkbox
-// Use *SelectCondition for Select
-// Use *MultiSelectCondition for MultiSelect
-// Use *DateCondition for CreatedTime, LastEditedTime
-// Use *DateCondition or PeopleCondition for Date
-// Use *PeopleCondition for CreatedBy, LastEditedBy
-// Use *FileCondition for Files
-// Use *RelationCondition for Relation
 type SingleFilter struct {
-	Property       string      `json:"property,omitempty"`
-	Title          interface{} `json:"title,omitempty"`
-	RichText       interface{} `json:"rich_text,omitempty"`
-	URL            interface{} `json:"url,omitempty"`
-	Email          interface{} `json:"email,omitempty"`
-	Phone          interface{} `json:"phone,omitempty"`
-	Number         interface{} `json:"number,omitempty"`
-	Checkbox       interface{} `json:"checkbox,omitempty"`
-	Select         interface{} `json:"select,omitempty"`
-	MultiSelect    interface{} `json:"multi_select,omitempty"`
-	CreatedTime    interface{} `json:"created_time,omitempty"`
-	LastEditedTime interface{} `json:"last_edited_time,omitempty"`
-	Date           interface{} `json:"date,omitempty"`
-	CreatedBy      interface{} `json:"created_by,omitempty"`
-	LastEditedBy   interface{} `json:"last_edited_by,omitempty"`
-	Files          interface{} `json:"files,omitempty"`
-	Relation       interface{} `json:"relation,omitempty"`
-	Formula        interface{} `json:"formula,omitempty"`
+	Property       string                `json:"property,omitempty"`
+	Title          *TextCondition        `json:"title,omitempty"`
+	RichText       *TextCondition        `json:"rich_text,omitempty"`
+	URL            *TextCondition        `json:"url,omitempty"`
+	Email          *TextCondition        `json:"email,omitempty"`
+	Phone          *TextCondition        `json:"phone,omitempty"`
+	Number         *NumberCondition      `json:"number,omitempty"`
+	Checkbox       *CheckboxCondition    `json:"checkbox,omitempty"`
+	Select         *SelectCondition      `json:"select,omitempty"`
+	MultiSelect    *MultiSelectCondition `json:"multi_select,omitempty"`
+	CreatedTime    *DateCondition        `json:"created_time,omitempty"`
+	LastEditedTime *DateCondition        `json:"last_edited_time,omitempty"`
+	Date           *DateCondition        `json:"date,omitempty"`
+	CreatedBy      *PeopleCondition      `json:"created_by,omitempty"`
+	LastEditedBy   *PeopleCondition      `json:"last_edited_by,omitempty"`
+	Files          *FileCondition        `json:"files,omitempty"`
+	Relation       *RelationCondition    `json:"relation,omitempty"`
+	Formula        *FormulaCondition     `json:"formula,omitempty"`
 }
 
 type TextCondition struct {
