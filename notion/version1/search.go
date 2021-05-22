@@ -44,26 +44,6 @@ type SearchFilter struct {
 // One approach: Unmarshal into a random struct to get the type of
 // each entry, and use that to Unnmarshal into the right struct.
 
-type SearchResponse struct {
-	Object     string           `json:"object,omitempty"`
-	Results    []DatabaseOrPage `json:"results,omitempty"`
-	NextCursor string           `json:"next_cursor,omitempty"`
-	HasMore    bool             `json:"has_more,omitempty"`
-}
-
-type DatabaseOrPage struct {
-	*Page
-	*Database
-}
-
-func (s *SearchService) Search(params *SearchBodyParams) (*SearchResponse, *http.Response, error) {
-	sResponse := new(SearchResponse)
-	apiError := new(APIError)
-	httpResponse, httpError := s.sling.New().Post("").BodyJSON(params).Receive(sResponse, apiError)
-
-	return sResponse, httpResponse, relevantError(httpError, *apiError)
-}
-
 type SearchPageResponse struct {
 	Object     string `json:"object,omitempty"`
 	Results    []Page `json:"results,omitempty"`
