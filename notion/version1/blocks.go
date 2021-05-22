@@ -18,7 +18,7 @@ func newBlockService(sling *sling.Sling) *BlockService {
 
 // https://developers.notion.com/reference/block
 // Object is always "block"
-// Type must be one of e "paragraph", "heading_1", "heading_2", "heading_3", "bulleted_list_item",
+// Type must be one of "paragraph", "heading_1", "heading_2", "heading_3", "bulleted_list_item",
 // "numbered_list_item", "to_do", "toggle", "child_page", and "unsupported"
 type Block struct {
 	Object           string                 `json:"object,omitempty"`

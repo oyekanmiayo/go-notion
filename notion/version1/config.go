@@ -3,11 +3,9 @@ package version1
 import (
 	"bytes"
 	"encoding/json"
+	"golang.org/x/oauth2"
 	"io/ioutil"
 	"net/http"
-	"net/url"
-
-	"golang.org/x/oauth2"
 )
 
 const (
@@ -19,9 +17,7 @@ const (
 	contentType = "Content-Type"
 )
 
-type Config struct {
-	Config oauth2.Config
-}
+type Config oauth2.Config
 
 type AccessTokenRequest struct {
 	GrantType   string `json:"grant_type"`
@@ -36,47 +32,29 @@ type AccessTokenResponse struct {
 	BotID         string `json:"bot_id"`
 }
 
-func (c *Config) AuthorizationURL(state string) (*url.URL, error) {
-	authorizationURL, err := url.Parse(c.Config.Endpoint.AuthURL)
-	if err != nil {
-		return nil, err
-	}
-
-	values := authorizationURL.Query()
-	values.Add(clientIDParam, c.Config.ClientID)
-	values.Add(redirectURIParam, c.Config.RedirectURL)
-	values.Add(responseTypeParam, "code")
-	values.Add(stateParam, state)
-
-	authorizationURL.RawQuery = values.Encode()
-
-	return authorizationURL, nil
-}
-
-func (c *Config) AccessToken(authCode string) (AccessTokenResponse, error) {
+func AccessToken(c *oauth2.Config, authCode string) (AccessTokenResponse, error) {
 	tokenRequest := AccessTokenRequest{
 		GrantType:   "authorization_code",
 		Code:        authCode,
-		RedirectURI: c.Config.RedirectURL,
+		RedirectURI: c.RedirectURL,
 	}
 	tokenRequestJSON, err := json.Marshal(tokenRequest)
 	if err != nil {
 		return AccessTokenResponse{}, err
 	}
 
-	req, err := http.NewRequest("POST", c.Config.Endpoint.TokenURL, bytes.NewBuffer(tokenRequestJSON))
+	req, err := http.NewRequest("POST", c.Endpoint.TokenURL, bytes.NewBuffer(tokenRequestJSON))
 	if err != nil {
 		return AccessTokenResponse{}, err
 	}
 
-	req.Header.Set(contentType, "application/json")
-	req.SetBasicAuth(c.Config.ClientID, c.Config.ClientSecret)
+	req.Header.Set("Content-Type", "application/json")
+	req.SetBasicAuth(c.ClientID, c.ClientSecret)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return AccessTokenResponse{}, err
 	}
-
 	defer resp.Body.Close()
 
 	var tokenResponse AccessTokenResponse

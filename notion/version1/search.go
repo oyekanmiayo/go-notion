@@ -41,6 +41,8 @@ type SearchFilter struct {
 
 // TODO: Find a way to unify responses and make them accessible.
 // Use json.RawMessage & https://play.golang.org/p/e6kvxtOeTCc
+// One approach: Unmarshal into a random struct to get the type of
+// each entry, and use that to Unnmarshal into the right struct.
 
 type SearchPageResponse struct {
 	Object     string `json:"object,omitempty"`
