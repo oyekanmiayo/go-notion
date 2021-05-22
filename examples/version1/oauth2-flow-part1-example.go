@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-// go run oauth2-flow-part1-example.go --client-id= --client-secret=
+// go run oauth2-flow-part1-example.go --client-id=
 func main() {
 
 	flags := flag.NewFlagSet("notion-databases-example", flag.ExitOnError)

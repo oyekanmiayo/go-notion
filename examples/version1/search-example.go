@@ -29,13 +29,15 @@ func main() {
 			Timestamp: "last_edited_time",
 		},
 	}
-	resp, _, err := client.Search.SearchPage(params)
+	res, _, err := client.Search.SearchPage(params)
 	if err != nil {
 		fmt.Printf("Err %v\n", err)
 	}
 
-	jsonBody, _ := json.Marshal(resp)
+	jsonBody, _ := json.Marshal(res)
 	fmt.Println(string(jsonBody))
+
+	fmt.Println("<==============================>")
 
 	// Search the workspace for databases with titles that contain this
 	paramsII := &notion.SearchBodyParams{
@@ -45,11 +47,11 @@ func main() {
 			Timestamp: "last_edited_time",
 		},
 	}
-	res, _, err := client.Search.SearchDatabase(paramsII)
+	resII, _, err := client.Search.SearchDatabase(paramsII)
 	if err != nil {
 		fmt.Printf("Err %v\n", err)
 	}
 
-	jsonBodyII, _ := json.Marshal(res)
+	jsonBodyII, _ := json.Marshal(resII)
 	fmt.Println(string(jsonBodyII))
 }
