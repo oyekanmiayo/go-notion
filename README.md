@@ -19,6 +19,7 @@ examples to see how to access Notion's v1 API.
     * [Search](#search)
 * [Contributing](#contributing)
 * [License](#license)
+* [Authors](#authors)
 
 ## Installation
 
