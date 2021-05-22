@@ -9,13 +9,14 @@ import (
 	"os"
 )
 
-// go run oauth2-flow-part1-example.go --client-id= --client-secret= --code=
+// go run oauth2-flow-part2-example.go --client-id= --client-secret= --code= --url=
 func main() {
 
 	flags := flag.NewFlagSet("notion-databases-example", flag.ExitOnError)
 	clientID := flags.String("client-id", "", "Client ID")
 	clientSecret := flags.String("client-secret", "", "Client ID")
 	code := flags.String("code", "", "Auth Code from Notion")
+	redirectURL := flags.String("url", "", "Redirect url")
 	err := flags.Parse(os.Args[1:])
 	if err != nil {
 		log.Fatalf("error: %v", err)
@@ -28,12 +29,11 @@ func main() {
 			AuthURL:  "https://api.notion.com/v1/oauth/authorize",
 			TokenURL: "https://api.notion.com/v1/oauth/token",
 		},
-		RedirectURL: "http://a8bc9f95180e.ngrok.io",
+		RedirectURL: *redirectURL,
 	}
 
-	authURL := c.AuthCodeURL("sample-state")
-	fmt.Println(authURL)
-
+	// This code is sent in as a query param to the redirect_uri after the user has authorized notion
+	//<redirect_uri>?code=<code>&state=<state>
 	resp, _ := notion.AccessToken(&c, *code)
 	fmt.Println(resp)
 }
