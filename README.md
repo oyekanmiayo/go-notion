@@ -3,7 +3,7 @@
 go-notion is a minimal Go client library for [Notion's v1 API](https://developers.notion.com/). Check the [usage] or
 examples to see how to access Notion's v1 API.
 
-***NB**: Notion's v1 API is still in beta. This integration may change as they update their endpoints*
+***NB**: Notion's v1 API is still in beta; this integration may change as they update it.*
 
 ## Table of Contents
 
@@ -109,6 +109,10 @@ func main() {
     client := notion.NewClient(http.DefaultClient, resp.AcessToken)
 }
 ```
+
+The `clientID` and `clientSecret` in the snippet above can be found on the developer portal:
+
+<img src="assets/public-integration-details.png" alt="internal integration token"/>
 
 ## Usage
 
