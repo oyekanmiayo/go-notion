@@ -1,7 +1,3 @@
-TODO:
-
-* **Talk about interfaces and type-specific objects etc.**
-
 # go-notion
 
 go-notion is a minimal Go client library for [Notion's v1 API](https://developers.notion.com/). Check the [usage] or
@@ -11,17 +7,18 @@ examples to see how to access Notion's v1 API.
 
 ## Table of Contents
 
-* [Installation]()
-* [Authentication]()
-* [Usage]()
-    * [Databases]()
-    * [Pages]()
-    * [Blocks]()
-    * [Users]()
-    * [Search]()
-* [Roadmap]()
-* [Contributing]()
-* [License]()
+* [Installation](#installation)
+* [Authentication](#authentication)
+    * [Internal Integration](#internal-integration)
+    * [Public Integration](#public-integration)
+* [Usage](#usage)
+    * [Databases](#databases)
+    * [Pages](#pages)
+    * [Blocks](#blocks)
+    * [Users](#users)
+    * [Search](#search)
+* [Contributing](#contributing)
+* [License](#license)
 
 ## Installation
 
@@ -40,7 +37,7 @@ When you create an internal integration on Notion's developer portal, you are gi
 Integration Token" - this is the bearer token. All you need to do is simply copy it out and store it as an environment
 variable (preferred) or use it directly in your code.
 
-Show image here
+<img src="assets/internal-integration-token.png" alt="internal integration token"/>
 
 NB: Internal Integration Token, Bearer Token and Access Token mean the same things here.
 
@@ -61,7 +58,57 @@ func main() {
 
 ### Public Integration
 
-This integration receives bearer tokens each time a user completes the [OAuth flow]().
+This integration receives bearer tokens each time a user completes the [OAuth flow](https://developers.notion.com/docs/authorization#authorizing-public-integrations).
+Basically, this is in 3 steps:
+1. **The client** requests authorization from a user
+2. **Notion** calls a callback url (a.k.a `redirect_uri`) with `state` and `code` as query params
+3. **The client** exchanges the code for a token
+
+```go
+import (
+	"flag"
+	"fmt"
+	"golang.org/x/oauth2"
+	"log"
+	"os"
+	"net/http"
+)
+
+func main() {
+
+	flags := flag.NewFlagSet("notion-example", flag.ExitOnError)
+	clientID := flags.String("client-id", "", "Client ID")
+	redirectURL := flags.String("url", "", "Redirect url")
+	err := flags.Parse(os.Args[1:])
+	if err != nil {
+		log.Fatalf("error: %v", err)
+	}
+
+	c := oauth2.Config{
+		ClientID:     *clientID,
+		ClientSecret: "",
+		Endpoint: oauth2.Endpoint{
+			AuthURL:  "https://api.notion.com/v1/oauth/authorize",
+			TokenURL: "https://api.notion.com/v1/oauth/token",
+		},
+		RedirectURL: *redirectURL,
+	}
+
+	// Generate the authorization url
+	authURL := c.AuthCodeURL("")
+	fmt.Println(authURL) 
+	
+	// The authorization url should be sent back to the client as a redirect
+	// The user will see an option to give the integration access to their workspace
+	// If the user approves the request, notion will call the call the callback url (a.k.a `redirect_uri`) with `state` and `code` as query params
+
+	// Use the code here to get an access token that can now be used with go-notion's client
+    resp, _ := notion.AccessToken(&c, code)
+    fmt.Println(resp)
+
+    client := notion.NewClient(http.DefaultClient, resp.AcessToken)
+}
+```
 
 ## Usage
 
@@ -71,7 +118,7 @@ Read more about the Database endpoints [here](https://developers.notion.com/refe
 
 #### Retrieve a database
 
-This retrieves a Notion database based on a specified ID.
+This retrieves a Notion database based on a specified ID. Read more [here](https://developers.notion.com/reference/get-database).
 
 ```go
 client := notion.NewClient(http.DefaultClient, *accessToken)
@@ -83,12 +130,12 @@ if err != nil {
 }
 ```
 
-See full code example [here]().
+See full code example [here](examples/version1/retrieve-database-example.go).
 
 #### Query a database
 
-This gets a list of [Pages]() contained in a database, filtered and ordered according to the filter conditions and sort
-criteria provided in the request. Filters can [single filters]() or [compound filters]() - read more [here]().
+This gets a list of [Pages](https://developers.notion.com/reference/page) contained in a database, filtered and ordered according to the filter conditions and sort
+criteria provided in the request. Filters can single filters or compound filters. Read more [here](https://developers.notion.com/reference/post-database-query).
 
 ```go
 client := notion.NewClient(http.DefaultClient, *accessToken)
@@ -108,12 +155,12 @@ if err != nil {
 }
 ```
 
-See full code example [here]() - it also contains a compound filter example :)
+See full code example [here](examples/version1/query-database-example.go) - it also contains a compound filter example :)
 
 #### List databases
 
 More than one database can be shared with a Notion integration. This endpoint lists all the databases shared with an
-authenticated integration.
+authenticated integration. Read more [here](https://developers.notion.com/reference/get-databases).
 
 ```go
 client := notion.NewClient(http.DefaultClient, *accessToken)
@@ -128,7 +175,7 @@ if err != nil {
 }
 ```
 
-See full code example [here]().
+See full code example [here](examples/version1/list-databases-example.go).
 
 ### Pages
 
@@ -136,7 +183,7 @@ Read more about Page endpoints [here](https://developers.notion.com/reference/pa
 
 #### Retrieve a page
 
-This retrieves a Notion page based on a specified ID.
+This retrieves a Notion page based on a specified ID. Read more [here](https://developers.notion.com/reference/get-page).
 
 ```go
 client := notion.NewClient(http.DefaultClient, *accessToken)
@@ -148,23 +195,22 @@ if err != nil {
 }
 ```
 
-See full code example [here]().
+See full code example [here](examples/version1/retrieve-page-example.go).
 
 #### Create a page
 
 Pages in Notion can be created within a database or within another page. This endpoint creates a page as a child of the
-parent (database or page) specified.
+parent (database or page) specified. Read more [here](https://developers.notion.com/reference/post-page).
 
 ```go
 client := notion.NewClient(http.DefaultClient, *accessToken)
 
-// Create a page in a database
 params := &notion.CreatePageBodyParams{
     Parent: &notion.DatabaseParent{
         DatabaseID: *databaseID,
     },
-    Properties: map[string]interface{}{
-        "Name": &notion.PageProperty{
+    Properties: map[string]notion.PageProperty{
+        "Name": {
             Title: []notion.RichText{
                 {
                     Text: &notion.Text{
@@ -173,8 +219,8 @@ params := &notion.CreatePageBodyParams{
                 },
             },
         },
-        "Tags": &notion.PageProperty{
-            MultiSelect: []notion.MultiSelectPropertyOptions{
+        "Tags": {
+            MultiSelect: []notion.MultiSelectPropertyOpts{
                 {
                     Name: "Tag1",
                 },
@@ -183,7 +229,7 @@ params := &notion.CreatePageBodyParams{
                 },
             },
         },
-        "Recommended": &notion.PageProperty{
+        "Recommended": {
             Checkbox: true,
         },
     },
@@ -195,31 +241,34 @@ if err != nil {
 ```
 
 The example above creates a page within a database. The body of the request is determined by the structure of the
-database. See full code example [here]() along with an example to create a page within another page.
+database. See full code example [here](examples/version1/create-page-example.go) along with an example to create a page within another page.
 
 #### Update page properties
 
 Updates page property values for the specified page. Properties that are not set via the "properties" parameter will
-remain unchanged.
+remain unchanged. Read more [here](https://developers.notion.com/reference/patch-page).
 
 ```go
 client := notion.NewClient(http.DefaultClient, *accessToken)
 
 // Update the title of a page
 params := &notion.UpdatePagePropertiesBodyParams{
-    Properties: map[string]map[string]interface{}{
+    // first keys are the names or ids of the properties :)
+    // id for title is "title"
+    // See examples here: https://developers.notion.com/reference/page#page-property-value
+    Properties: map[string]notion.PageProperty{
         "Name": {
-            "title": []notion.RichText{
+            Title: []notion.RichText{
                 {
                     Type: "text",
                     Text: &notion.Text{
-                        Content: "Jamaican Cuisines II",
+                        Content: "Jamaican Cuisines III",
                     },
                 },
             },
         },
         "Recommended": {
-            "checkbox": false,
+            Checkbox: true,
         },
     },
 }
@@ -229,7 +278,7 @@ if err != nil {
 }
 ```
 
-See full code example [here]().
+See full code example [here](examples/version1/update-page-properties-example.go).
 
 ### Blocks
 
@@ -239,7 +288,7 @@ too! Read more about Block endpoints [here](https://developers.notion.com/refere
 #### Retrieve block children
 
 Returns a paginated array of child block objects contained in the block using the ID specified. In order to receive a
-complete representation of a block, you may need to recursively retrieve the block children of child blocks.
+complete representation of a block, you may need to recursively retrieve the block children of child blocks. Read more [here](https://developers.notion.com/reference/get-block-children).
 
 ```go
 client := notion.NewClient(http.DefaultClient, *accessToken)
@@ -252,12 +301,12 @@ if err != nil {
 }
 ```
 
-See full code example [here]().
+See full code example [here](examples/version1/retrieve-block-children-example.go).
 
 #### Append block children
 
 Creates and appends new children blocks to the block using the ID specified. Returns the Block object which contains the
-new children.
+new children. Read more [here](https://developers.notion.com/reference/patch-block-children).
 
 ```go
 client := notion.NewClient(http.DefaultClient, *accessToken)
@@ -302,7 +351,7 @@ if err != nil {
 }
 ```
 
-See full code example [here]().
+See full code example [here](examples/version1/append-block-children-example.go).
 
 ### Users
 
@@ -311,7 +360,7 @@ more about User endpoints [here](https://developers.notion.com/reference/user).
 
 ### Retrieve a user
 
-This retrieves a Notion user based on a specified ID.
+This retrieves a Notion user based on a specified ID. Read more [here](https://developers.notion.com/reference/get-user).
 
 ```go
 client := notion.NewClient(http.DefaultClient, *accessToken)
@@ -323,11 +372,11 @@ if err != nil {
 }
 ```
 
-See full code example [here]().
+See full code example [here](examples/version1/retrieve-user-example.go).
 
 ### List all users
 
-Returns a paginated list of users for the workspace.
+Returns a paginated list of users for the workspace. Read more [here](https://developers.notion.com/reference/get-users).
 
 ```go
 client := notion.NewClient(http.DefaultClient, *accessToken)
@@ -342,13 +391,13 @@ if err != nil {
 }
 ```
 
-See full code example [here]().
+See full code example [here](examples/version1/list-users-example.go).
 
 ### Search
 
 Searches all pages and child pages that are shared with the integration and returns a list of databases and pages which
 have titles that contain the `query` parameter. Other parameters like `sort` and `filter` also affect the output. Read
-more about it [here](https://developers.notion.com/reference/post-search)
+more about it [here](https://developers.notion.com/reference/post-search).
 
 ```go
 client := notion.NewClient(http.DefaultClient, *accessToken)
@@ -372,14 +421,16 @@ if err != nil {
 }
 ```
 
-See full code example [here]().
+See full code example [here](examples/version1/search-example.go).
 
 ### Contributing
 
 * Code Contributions won't be accepted until Notion's v1 API is out of beta. This may change in the future, if needed
 * Open an issue if you find a bug or missing integration
-* You can reach out to me via [Twitter]() or [Email]() for urgent issues
 
 ### License
 
-[Apache 2.0 License]()
+[Apache 2.0 License](LICENSE)
+
+### Authors
+* [Ayomide Oyekanmi](https://twitter.com/_alternatewolf)
