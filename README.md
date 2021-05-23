@@ -432,7 +432,7 @@ See full code example [here](examples/version1/search-example.go).
 
 ### Contributing
 
-* Code Contributions won't be accepted until Notion's v1 API is out of beta. This may change in the future, if needed
+* Code Contributions won't be accepted until Notion's v1 API is out of beta
 * Open an issue if you find a bug or missing integration
 
 ### License
