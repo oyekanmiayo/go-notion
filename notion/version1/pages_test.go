@@ -1,7 +1,8 @@
-package version1
+package version1_test
 
 import (
 	"fmt"
+	notion "github.com/oyekanmiayo/go-notion/notion/version1"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"
@@ -10,7 +11,7 @@ import (
 //TODO: Clean up tests. Extract reused names.
 var (
 	testPageJSON = `{"object":"page","id":"5678","created_time":"2021-05-14T01:06:32.845Z","last_edited_time":"2021-05-23T08:02:00.000Z","parent":{"database_id":"38923","type":"database_id"},"properties":{"Name":{"id":"title","type":"title","title":[{"plain_text":"Jamboree"}]},"Recommended":{"id":"EZMA","type":"checkbox","checkbox":true},"Tags":{"id":"VSvn","type":"multi_select","multi_select":[{"id":"44645","name":"TagTest","color":"purple"}]}}}` + "\n"
-	testPage     = &Page{
+	testPage     = &notion.Page{
 		Object:         "page",
 		ID:             "5678",
 		CreatedTime:    "2021-05-14T01:06:32.845Z",
@@ -21,11 +22,11 @@ var (
 			"database_id": "38923",
 			"type":        "database_id",
 		},
-		Properties: map[string]PageProperty{
+		Properties: map[string]notion.PageProperty{
 			"Name": {
 				ID:   "title",
 				Type: "title",
-				Title: []RichText{
+				Title: []notion.RichText{
 					{
 						PlainText: "Jamboree",
 					},
@@ -39,7 +40,7 @@ var (
 			"Tags": {
 				ID:   "VSvn",
 				Type: "multi_select",
-				MultiSelect: []MultiSelectPropertyOpts{
+				MultiSelect: []notion.MultiSelectPropertyOpts{
 					{
 						ID:    "44645",
 						Name:  "TagTest",
@@ -52,18 +53,18 @@ var (
 	testRetrievePageResJSON = testPageJSON
 	testRetrievePageRes     = testPage
 
-	testPageProperty = map[string]PageProperty{
+	testPageProperty = map[string]notion.PageProperty{
 		"Name": {
-			Title: []RichText{
+			Title: []notion.RichText{
 				{
-					Text: &Text{
+					Text: &notion.Text{
 						Content: "Jamboree",
 					},
 				},
 			},
 		},
 		"Tags": {
-			MultiSelect: []MultiSelectPropertyOpts{
+			MultiSelect: []notion.MultiSelectPropertyOpts{
 				{
 					Name: "TagTest",
 				},
@@ -75,8 +76,8 @@ var (
 	}
 
 	testCreatePageBodyJSON = `{"parent":{"database_id":"7d6410f1-0c2d-4c75-8199-3fd7d90ff4ff"},"properties":{"Name":{"title":[{"text":{"content":"Jamboree"}}]},"Recommended":{"checkbox":true},"Tags":{"multi_select":[{"name":"TagTest"}]}}}` + "\n"
-	testCreatePageBody     = &CreatePageBodyParams{
-		Parent: &DatabaseParent{
+	testCreatePageBody     = &notion.CreatePageBodyParams{
+		Parent: &notion.DatabaseParent{
 			DatabaseID: "7d6410f1-0c2d-4c75-8199-3fd7d90ff4ff",
 		},
 		Properties: testPageProperty,
@@ -85,7 +86,7 @@ var (
 	testCreatePageRes     = testPage
 
 	testUpdatePropertiesBodyJSON = `{"properties":{"Name":{"title":[{"text":{"content":"Jamboree"}}]},"Recommended":{"checkbox":true},"Tags":{"multi_select":[{"name":"TagTest"}]}}}` + "\n"
-	testUpdatePropertiesBody     = &UpdatePagePropertiesBodyParams{
+	testUpdatePropertiesBody     = &notion.UpdatePagePropertiesBodyParams{
 		Properties: testPageProperty,
 	}
 	testUpdatePropertiesResJSON = testPageJSON
@@ -102,7 +103,7 @@ func TestPageService_RetrievePage(t *testing.T) {
 		fmt.Fprintf(w, testRetrievePageResJSON)
 	})
 
-	client := NewClient(httpClient, "0000")
+	client := notion.NewClient(httpClient, "0000")
 	resp, _, err := client.Pages.RetrievePage("123")
 	assert.Nil(t, err)
 	assert.Equal(t, testRetrievePageRes, resp)
@@ -119,7 +120,7 @@ func TestPageService_CreatePage(t *testing.T) {
 		fmt.Fprintf(w, testCreatePageResJSON)
 	})
 
-	client := NewClient(httpClient, "0000")
+	client := notion.NewClient(httpClient, "0000")
 	resp, _, err := client.Pages.CreatePage(testCreatePageBody)
 	assert.Nil(t, err)
 	assert.Equal(t, testCreatePageRes, resp)
@@ -136,7 +137,7 @@ func TestPageService_UpdatePageProperties(t *testing.T) {
 		fmt.Fprintf(w, testUpdatePropertiesResJSON)
 	})
 
-	client := NewClient(httpClient, "0000")
+	client := notion.NewClient(httpClient, "0000")
 	resp, _, err := client.Pages.UpdatePageProperties("123", testUpdatePropertiesBody)
 	assert.Nil(t, err)
 	assert.Equal(t, testUpdatePropertiesRes, resp)

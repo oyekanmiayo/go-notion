@@ -1,7 +1,8 @@
-package version1
+package version1_test
 
 import (
 	"fmt"
+	notion "github.com/oyekanmiayo/go-notion/notion/version1"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/oauth2"
 	"net/http"
@@ -9,10 +10,10 @@ import (
 )
 
 var (
-	testAuthorizationURL = "https://api.notion.com/v1/oauth/authorize?client_id=client_id&redirect_uri=http%3A%2F%2Flocalhost%3A8081&response_type=code"
+	testAuthorizationURL   = "https://api.notion.com/v1/oauth/authorize?client_id=client_id&redirect_uri=http%3A%2F%2Flocalhost%3A8081&response_type=code"
 	testAccessTokenReqJSON = `{"grant_type":"authorization_code","code":"1234","redirect_uri":"http://localhost:8081"}` + "\n"
 	testAccessTokenResJSON = `{"access_token": "abc123def", "workspace_name": "workspace", "workspace_icon": "icon", "bot_id": "987"}`
-	testAccessTokenRes     = AccessTokenResponse{
+	testAccessTokenRes     = notion.AccessTokenResponse{
 		AccessToken:   "abc123def",
 		WorkspaceName: "workspace",
 		WorkspaceIcon: "icon",
@@ -30,7 +31,7 @@ func TestAuthService_AuthorizationURL(t *testing.T) {
 		},
 		RedirectURL: "http://localhost:8081",
 	}
-	client := AuthClient(nil)
+	client := notion.AuthClient(nil)
 	authURL := client.Auth.AuthorizationURL(&config, "")
 	assert.Equal(t, testAuthorizationURL, authURL)
 }
@@ -56,7 +57,7 @@ func TestAuthService_AccessToken(t *testing.T) {
 		RedirectURL: "http://localhost:8081",
 	}
 
-	client := AuthClient(httpClient)
+	client := notion.AuthClient(httpClient)
 	resp, _, err := client.Auth.AccessToken(&config, "1234")
 	assert.Nil(t, err)
 	assert.Equal(t, &testAccessTokenRes, resp)

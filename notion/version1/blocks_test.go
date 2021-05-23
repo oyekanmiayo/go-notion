@@ -1,7 +1,8 @@
-package version1
+package version1_test
 
 import (
 	"fmt"
+	notion "github.com/oyekanmiayo/go-notion/notion/version1"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"
@@ -9,14 +10,14 @@ import (
 
 var (
 	testRetrieveBlockChildrenResJSON = `{"object":"list","results":[{"object":"block","type":"to_do","to_do":{"text":[{"plain_text":"Sample Task","type":""}]}}]}`
-	testRetrieveBlockChildrenRes     = RetrieveBlockChildrenResponse{
+	testRetrieveBlockChildrenRes     = &notion.RetrieveBlockChildrenResponse{
 		Object: "list",
-		Results: []Block{
+		Results: []notion.Block{
 			{
 				Object: "block",
 				Type:   "to_do",
-				ToDo: &ToDoBlock{
-					Text: []RichText{
+				ToDo: &notion.ToDoBlock{
+					Text: []notion.RichText{
 						{
 							PlainText: "Sample Task",
 						},
@@ -27,16 +28,16 @@ var (
 	}
 
 	testAppendBlockChildrenBodyParamsJSON = `{"children":[{"object":"block","type":"heading_2","heading_2":{"text":[{"type":"text","text":{"content":"Header Two Test"}}]}}]}` + "\n"
-	testAppendBlockChildrenBodyParams     = &AppendBlockChildrenBodyParams{
-		Children: []Block{
+	testAppendBlockChildrenBodyParams     = &notion.AppendBlockChildrenBodyParams{
+		Children: []notion.Block{
 			{
 				Object: "block",
 				Type:   "heading_2",
-				HeadingTwo: &HeadingTwoBlock{
-					Text: []RichText{
+				HeadingTwo: &notion.HeadingTwoBlock{
+					Text: []notion.RichText{
 						{
 							Type: "text",
-							Text: &Text{
+							Text: &notion.Text{
 								Content: "Header Two Test",
 							},
 						},
@@ -57,14 +58,14 @@ var (
 		"title": "Yurts in Big Surr, California 2 "
 	  }
 	}`
-	testAppendBlockChildrenRes = Block{
+	testAppendBlockChildrenRes = &notion.Block{
 		Object:         "block",
 		ID:             "123",
 		Type:           "child_page",
 		CreatedTime:    "2021-05-16T14:35:46.713Z",
 		LastEditedTime: "2021-05-23T07:09:07.935Z",
 		HasChildren:    true,
-		ChildPage: &ChildPageBlock{
+		ChildPage: &notion.ChildPageBlock{
 			Title: "Yurts in Big Surr, California 2 ",
 		},
 	}
@@ -80,11 +81,11 @@ func TestBlockService_RetrieveBlockChildren(t *testing.T) {
 		fmt.Fprintf(w, testRetrieveBlockChildrenResJSON)
 	})
 
-	client := NewClient(httpClient, "0000")
-	params := RetrieveBlockChildrenParams{}
+	client := notion.NewClient(httpClient, "0000")
+	params := notion.RetrieveBlockChildrenParams{}
 	resp, _, err := client.Blocks.RetrieveBlockChildren("123", &params)
 	assert.Nil(t, err)
-	assert.Equal(t, &testRetrieveBlockChildrenRes, resp)
+	assert.Equal(t, testRetrieveBlockChildrenRes, resp)
 }
 
 func TestBlockService_AppendBlockChildren(t *testing.T) {
@@ -98,8 +99,8 @@ func TestBlockService_AppendBlockChildren(t *testing.T) {
 		fmt.Fprintf(w, testAppendBlockChildrenResJSON)
 	})
 
-	client := NewClient(httpClient, "0000")
+	client := notion.NewClient(httpClient, "0000")
 	resp, _, err := client.Blocks.AppendBlockChildren("123", testAppendBlockChildrenBodyParams)
 	assert.Nil(t, err)
-	assert.Equal(t, &testAppendBlockChildrenRes, resp)
+	assert.Equal(t, testAppendBlockChildrenRes, resp)
 }

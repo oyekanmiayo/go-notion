@@ -1,31 +1,32 @@
-package version1
+package version1_test
 
 import (
 	"fmt"
+	notion "github.com/oyekanmiayo/go-notion/notion/version1"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"
 )
 
 var (
-	testDB = &Database{
+	testDB = &notion.Database{
 		Object:         "database",
 		ID:             "123",
 		CreatedTime:    "2021-05-23T07:41:16.751Z",
 		LastEditedTime: "2021-05-23T07:41:00.000Z",
-		Title: []RichText{
+		Title: []notion.RichText{
 			{
 				PlainText: "TestDB",
-				Annotations: &Annotations{
+				Annotations: &notion.Annotations{
 					Color: "default",
 				},
 				Type: "text",
-				Text: &Text{
+				Text: &notion.Text{
 					Content: "TestDB",
 				},
 			},
 		},
-		Properties: map[string]PropertyObj{
+		Properties: map[string]notion.PropertyObj{
 			"Name": {
 				ID:    "title",
 				Type:  "title",
@@ -38,18 +39,18 @@ var (
 	testDatabaseRes     = testDB
 
 	testSingleFilterParamsJSON = `{"filter":{"property":"Tags","multi_select":{"contains":"TagTest"}}}` + "\n"
-	testSingleFilterParams     = &QueryDatabaseBodyParams{
-		Filter: &SingleFilter{
+	testSingleFilterParams     = &notion.QueryDatabaseBodyParams{
+		Filter: &notion.SingleFilter{
 			Property: "Tags",
-			MultiSelect: &MultiSelectCondition{
+			MultiSelect: &notion.MultiSelectCondition{
 				Contains: "TagTest",
 			},
 		},
 	}
 	testFilterResJSON = `{"object":"list","results":[{"object":"page","id":"5678","created_time":"2021-05-14T01:06:32.845Z","last_edited_time":"2021-05-23T08:02:00.000Z","parent":{"database_id":"38923","type":"database_id"},"properties":{"Name":{"id":"title","type":"title","title":[{"plain_text":"Jamboree"}]},"Recommended":{"id":"EZMA","type":"checkbox","checkbox":true},"Tags":{"id":"VSvn","type":"multi_select","multi_select":[{"id":"44645","name":"TagTest","color":"purple"}]}}}]}` + "\n"
-	testFilterRes     = &QueryDatabaseResponse{
+	testFilterRes     = &notion.QueryDatabaseResponse{
 		Object: "list",
-		Results: []Page{
+		Results: []notion.Page{
 			{
 				Object:         "page",
 				ID:             "5678",
@@ -61,11 +62,11 @@ var (
 					"database_id": "38923",
 					"type":        "database_id",
 				},
-				Properties: map[string]PageProperty{
+				Properties: map[string]notion.PageProperty{
 					"Name": {
 						ID:   "title",
 						Type: "title",
-						Title: []RichText{
+						Title: []notion.RichText{
 							{
 								PlainText: "Jamboree",
 							},
@@ -79,7 +80,7 @@ var (
 					"Tags": {
 						ID:   "VSvn",
 						Type: "multi_select",
-						MultiSelect: []MultiSelectPropertyOpts{
+						MultiSelect: []notion.MultiSelectPropertyOpts{
 							{
 								ID:    "44645",
 								Name:  "TagTest",
@@ -93,18 +94,18 @@ var (
 	}
 
 	testCompFilterParamsJSON = `{"filter":{"and":[{"property":"Tags","multi_select":{"contains":"TagTest"}},{"property":"Name","title":{"contains":"Jamboree"}}]}}` + "\n"
-	testCompFilterParams     = &QueryDatabaseBodyParams{
-		Filter: &CompoundFilter{
-			AND: []SingleFilter{
+	testCompFilterParams     = &notion.QueryDatabaseBodyParams{
+		Filter: &notion.CompoundFilter{
+			AND: []notion.SingleFilter{
 				{
 					Property: "Tags",
-					MultiSelect: &MultiSelectCondition{
+					MultiSelect: &notion.MultiSelectCondition{
 						Contains: "TagTest",
 					},
 				},
 				{
 					Property: "Name",
-					Title: &TextCondition{
+					Title: &notion.TextCondition{
 						Contains: "Jamboree",
 					},
 				},
@@ -113,19 +114,19 @@ var (
 	}
 
 	testListDBResJSON = `{"results":[{"object":"database","id":"f170fb7c-af53-4173-a0b2-c4cfc8da7789","created_time":"2021-05-23T07:41:16.751Z","last_edited_time":"2021-05-23T08:04:00.000Z","title":[{"plain_text":"DB for Testing"}],"properties":{"Name":{"id":"title","type":"title","title":{}},"Tags":{"id":"M}hZ","type":"multi_select","multi_select":{"options":[{"name":"TagTest","id":"f3bbc99e-f70b-4585-a1a4-f3f895e01104","color":"gray"}]}}}}]}` + "\n"
-	testListDBRes     = &ListDatabasesResponse{
-		Results: []Database{
+	testListDBRes     = &notion.ListDatabasesResponse{
+		Results: []notion.Database{
 			{
 				Object:         "database",
 				ID:             "f170fb7c-af53-4173-a0b2-c4cfc8da7789",
 				CreatedTime:    "2021-05-23T07:41:16.751Z",
 				LastEditedTime: "2021-05-23T08:04:00.000Z",
-				Title: []RichText{
+				Title: []notion.RichText{
 					{
 						PlainText: "DB for Testing",
 					},
 				},
-				Properties: map[string]PropertyObj{
+				Properties: map[string]notion.PropertyObj{
 					"Name": {
 						ID:    "title",
 						Type:  "title",
@@ -134,8 +135,8 @@ var (
 					"Tags": {
 						ID:   "M}hZ",
 						Type: "multi_select",
-						MultiSelect: &MultiSelectConfig{
-							Options: []MultiSelectOption{
+						MultiSelect: &notion.MultiSelectConfig{
+							Options: []notion.MultiSelectOption{
 								{
 									Name:  "TagTest",
 									ID:    "f3bbc99e-f70b-4585-a1a4-f3f895e01104",
@@ -160,7 +161,7 @@ func TestDatabaseService_RetrieveDatabase(t *testing.T) {
 		fmt.Fprintf(w, testDatabaseResJSON)
 	})
 
-	client := NewClient(httpClient, "0000")
+	client := notion.NewClient(httpClient, "0000")
 	resp, _, err := client.Databases.RetrieveDatabase("123")
 	assert.Nil(t, err)
 	assert.Equal(t, testDatabaseRes, resp)
@@ -177,7 +178,7 @@ func TestDatabaseService_QueryDatabase_SingleFilter(t *testing.T) {
 		fmt.Fprintf(w, testFilterResJSON)
 	})
 
-	client := NewClient(httpClient, "0000")
+	client := notion.NewClient(httpClient, "0000")
 	resp, _, err := client.Databases.QueryDatabase("123", testSingleFilterParams)
 	assert.Nil(t, err)
 	assert.Equal(t, testFilterRes, resp)
@@ -195,7 +196,7 @@ func TestDatabaseService_QueryDatabase_CompoundFilter(t *testing.T) {
 		fmt.Fprintf(w, testFilterResJSON)
 	})
 
-	client := NewClient(httpClient, "0000")
+	client := notion.NewClient(httpClient, "0000")
 	resp, _, err := client.Databases.QueryDatabase("123", testCompFilterParams)
 	assert.Nil(t, err)
 	assert.Equal(t, testFilterRes, resp)
@@ -212,8 +213,8 @@ func TestDatabaseService_ListDatabases(t *testing.T) {
 		fmt.Fprintf(w, testListDBResJSON)
 	})
 
-	client := NewClient(httpClient, "0000")
-	resp, _, err := client.Databases.ListDatabases(&ListDatabasesQueryParams{})
+	client := notion.NewClient(httpClient, "0000")
+	resp, _, err := client.Databases.ListDatabases(&notion.ListDatabasesQueryParams{})
 	assert.Nil(t, err)
 	assert.Equal(t, testListDBRes, resp)
 }

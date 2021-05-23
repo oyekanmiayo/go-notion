@@ -1,7 +1,8 @@
-package version1
+package version1_test
 
 import (
 	"fmt"
+	notion "github.com/oyekanmiayo/go-notion/notion/version1"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"
@@ -9,18 +10,18 @@ import (
 
 var (
 	testUserJSON = `{"object":"user","id":"123abc","type":"person","name":"John Doe","avatar_url":"https://test.com/test","person":{"email":"test@gmail.com"}}` + "\n"
-	testUser     = &User{
+	testUser     = &notion.User{
 		Object:    "user",
 		ID:        "123abc",
 		Type:      "person",
 		Name:      "John Doe",
 		AvatarURL: "https://test.com/test",
-		Person: &Person{
+		Person: &notion.Person{
 			PersonEmail: "test@gmail.com",
 		},
 	}
 
-	testBot = &User{
+	testBot = &notion.User{
 		Object: "user",
 		ID:     "456def",
 		Type:   "bot",
@@ -29,9 +30,9 @@ var (
 	}
 
 	testListUsersJSON = `{"object":"list","results":[{"object":"user","id":"123abc","type":"person","name":"John Doe","avatar_url":"https://test.com/test","person":{"email":"test@gmail.com"}},{"object":"user","id":"456def","type":"bot","name":"Test Integration","bot":{}}]}` + "\n"
-	testListUsers     = &ListUsersResponse{
+	testListUsers     = &notion.ListUsersResponse{
 		Object: "list",
-		Results: []User{
+		Results: []notion.User{
 			*testUser,
 			*testBot,
 		},
@@ -48,7 +49,7 @@ func TestUserService_RetrieveUser(t *testing.T) {
 		fmt.Fprintf(w, testUserJSON)
 	})
 
-	client := NewClient(httpClient, "0000")
+	client := notion.NewClient(httpClient, "0000")
 	resp, _, err := client.Users.RetrieveUser("123")
 	assert.Nil(t, err)
 	assert.Equal(t, testUser, resp)
@@ -64,8 +65,8 @@ func TestUserService_ListUsers(t *testing.T) {
 		fmt.Fprintf(w, testListUsersJSON)
 	})
 
-	client := NewClient(httpClient, "0000")
-	resp, _, err := client.Users.ListUsers(&ListUsersQueryParams{})
+	client := notion.NewClient(httpClient, "0000")
+	resp, _, err := client.Users.ListUsers(&notion.ListUsersQueryParams{})
 	assert.Nil(t, err)
 	assert.Equal(t, testListUsers, resp)
 }
