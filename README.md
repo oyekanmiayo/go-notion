@@ -94,9 +94,11 @@ func main() {
 		},
 		RedirectURL: *redirectURL,
 	}
-
+	
+	client := notion.AuthClient(http.DefaultClient)
+	
 	// Generate the authorization url
-	authURL := c.AuthCodeURL("")
+	authURL := client.Auth.AuthorizationURL(&c, "")
 	fmt.Println(authURL) 
 	
 	// The authorization url should be sent back to the client as a redirect
@@ -104,10 +106,10 @@ func main() {
 	// If the user approves the request, notion will call the call the callback url (a.k.a `redirect_uri`) with `state` and `code` as query params
 
 	// Use the code here to get an access token that can now be used with go-notion's client
-    resp, _ := notion.AccessToken(&c, code)
-    fmt.Println(resp)
-
-    client := notion.NewClient(http.DefaultClient, resp.AcessToken)
+	resp, _ := client.Auth.AccessToken(&c, *code)
+	fmt.Println(resp)
+	
+	client := notion.NewClient(http.DefaultClient, resp.AcessToken)
 }
 ```
 
