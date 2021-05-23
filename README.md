@@ -115,7 +115,7 @@ func main() {
 
 The `clientID` and `clientSecret` in the snippet above can be found on the developer portal:
 
-<img src="assets/public-integration-details.png" alt="internal integration token"/>
+<img src="assets/public-integration-details.png" alt="public integration details"/>
 
 ## Usage
 
