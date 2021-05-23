@@ -6,6 +6,7 @@ import (
 	notion "github.com/oyekanmiayo/go-notion/notion/version1"
 	"golang.org/x/oauth2"
 	"log"
+	"net/http"
 	"os"
 )
 
@@ -32,8 +33,11 @@ func main() {
 		RedirectURL: *redirectURL,
 	}
 
+	fmt.Println("Hello")
+	client := notion.AuthClient(http.DefaultClient)
+
 	// This code is sent in as a query param to the redirect_uri after the user has authorized notion
 	//<redirect_uri>?code=<code>&state=<state>
-	resp, _ := notion.AccessToken(&c, *code)
+	resp, _, _ := client.Auth.AccessToken(&c, *code)
 	fmt.Println(resp)
 }

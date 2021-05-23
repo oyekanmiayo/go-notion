@@ -95,10 +95,10 @@ type RetrieveBlockChildrenParams struct {
 }
 
 type RetrieveBlockChildrenResponse struct {
-	Object     string  `json:"object"`
-	Results    []Block `json:"results"`
-	NextCursor string  `json:"next_cursor"`
-	HasMore    bool    `json:"has_more"`
+	Object     string  `json:"object,omitempty"`
+	Results    []Block `json:"results,omitempty"`
+	NextCursor string  `json:"next_cursor,omitempty"`
+	HasMore    bool    `json:"has_more,omitempty"`
 }
 
 // https://developers.notion.com/reference/get-block-children

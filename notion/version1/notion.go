@@ -17,6 +17,15 @@ type Client struct {
 	Pages     *PageService
 	Blocks    *BlockService
 	Search    *SearchService
+	Auth      *AuthService
+}
+
+func AuthClient(client *http.Client) *Client {
+	base := sling.New().Client(client).Base(notionAPI)
+
+	return &Client{
+		Auth: newAuthService(base.New()),
+	}
 }
 
 func NewClient(client *http.Client, accessToken string) *Client {

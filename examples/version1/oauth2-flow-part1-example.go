@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	notion "github.com/oyekanmiayo/go-notion/notion/version1"
 	"golang.org/x/oauth2"
 	"log"
 	"os"
@@ -29,6 +30,8 @@ func main() {
 		RedirectURL: *redirectURL,
 	}
 
-	authURL := c.AuthCodeURL("")
+	client := notion.AuthClient(nil)
+
+	authURL := client.Auth.AuthorizationURL(&c, "")
 	fmt.Println(authURL)
 }

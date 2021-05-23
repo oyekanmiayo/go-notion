@@ -57,12 +57,13 @@ func main() {
 		},
 	}
 
-	db, _, err := client.Blocks.AppendBlockChildren(*blockID, params)
+
+	res, _, err := client.Blocks.AppendBlockChildren(*blockID, params)
 	if err != nil {
 		fmt.Printf("Err %v\n", err)
 	}
 
-	jsonBody, _ := json.Marshal(db)
+	jsonBody, _ := json.Marshal(res)
 	fmt.Println()
 	fmt.Println(string(jsonBody))
 }

@@ -4,9 +4,12 @@ import "fmt"
 
 // APIError represents a Notion API response
 // https://developers.notion.com/reference/errors
+// Object is always "error"
 type APIError struct {
-	Code    string `json:"code"`
-	Message string `json:"message"`
+	Object  string `json:"object,omitempty"`
+	Status  int32  `json:"status,omitempty"`
+	Code    string `json:"code,omitempty"`
+	Message string `json:"message,omitempty"`
 }
 
 func (e APIError) Error() string {

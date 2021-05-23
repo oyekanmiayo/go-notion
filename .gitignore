@@ -118,3 +118,5 @@ modules.xml
 .DS_Store
 .AppleDouble
 .LSOverride
+
+examples/version1/testing.go
