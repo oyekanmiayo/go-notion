@@ -28,9 +28,6 @@ jobs:
               dep ensure
           fi
 
-      - name: Build
-        run: go build notion/version1/*.go v .
-
       - name: Test
         run: cd notion/version1 && go test -v -race -coverprofile=coverage.txt -covermode=atomic .
 
