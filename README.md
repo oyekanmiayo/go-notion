@@ -1,7 +1,7 @@
-# go-notion
+# go-notion (beta)
 
-go-notion is a minimal Go client library for [Notion's v1 API](https://developers.notion.com/). Check the [usage] or
-examples to see how to access Notion's v1 API.
+go-notion is a minimal Go client library for [Notion's v1 API](https://developers.notion.com/). Check the [usage](#usage) or
+[examples](examples/version1) to see how to access Notion's v1 API.
 
 ***NB**: Notion's v1 API is still in beta; this integration will change as they update it.*
 
