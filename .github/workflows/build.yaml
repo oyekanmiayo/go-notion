@@ -22,7 +22,7 @@ jobs:
 
       - name: Get dependencies
         run: |
-          go get -v -t -d ./...
+          go get -v -t -d ./notion/verson1/...
           if [ -f Gopkg.toml ]; then
               curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
               dep ensure
@@ -32,7 +32,7 @@ jobs:
         run: go build v .
 
       - name: Test
-        run: go test -v -race -coverprofile=coverage.txt -covermode=atomic .
+        run: go test ./notion/verson1/... -v -race -coverprofile=coverage.txt -covermode=atomic .
 
       - name: Upload coverage
         run: bash <(curl -s https://codecov.io/bash)
