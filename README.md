@@ -365,7 +365,7 @@ See full code example [here](examples/version1/append-block-children-example.go)
 The User object represents a user in a Notion workspace. Users include guests, full workspace members, and bots. Read
 more about User endpoints [here](https://developers.notion.com/reference/user).
 
-### Retrieve a user
+#### Retrieve a user
 
 This retrieves a Notion user based on a specified ID. Read more [here](https://developers.notion.com/reference/get-user).
 
@@ -381,7 +381,7 @@ if err != nil {
 
 See full code example [here](examples/version1/retrieve-user-example.go).
 
-### List all users
+#### List all users
 
 Returns a paginated list of users for the workspace. Read more [here](https://developers.notion.com/reference/get-users).
 
