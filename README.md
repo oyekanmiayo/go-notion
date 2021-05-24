@@ -1,4 +1,4 @@
-# go-notion (beta)
+# go-notion (beta) [![Build status](https://github.com/oyekanmiayo/go-notion/workflows/Build/badge.svg)](https://github.com/oyekanmiayo/go-notion/actions?query=workflow%3ABuild)
 
 go-notion is a minimal Go client library for [Notion's v1 API](https://developers.notion.com/). Check the [usage](#usage) or
 [examples](examples/version1) to see how to access Notion's v1 API.
