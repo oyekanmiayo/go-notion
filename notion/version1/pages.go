@@ -106,7 +106,7 @@ type MultiSelectPropertyOpts struct {
 // If End is not defined, this Date struct isn't considered a range
 // https://developers.notion.com/reference/page#date-property-values
 type DateProperty struct {
-	Start string `json:"star,omitempty"`
+	Start string `json:"start,omitempty"`
 	End   string `json:"end,omitempty"`
 }
 
